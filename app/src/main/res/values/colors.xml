@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+<!-- Array of colors that will be used by ViewPager as background colors -->
+    <array name="colorPagesViewPager">
+        <item>#ffde3c50</item>
+        <item>#ff9b9b9b</item>
+        <item>#A5468AD9</item>
+        <item>#ffb8e986</item>
+        <item>#fff9ec4f</item>
+    </array>
+
+
+    <color name="faded_red">#ffde3c50</color>
+    <color name="warm_grey">#ff9b9b9b</color>
+    <color name="cornflower_blue_65">#A5468AD9</color>
+    <color name="light_sage">#ffb8e986</color>
+    <color name="banana_yellow">#fff9ec4f</color>
+
+
+</resources>
