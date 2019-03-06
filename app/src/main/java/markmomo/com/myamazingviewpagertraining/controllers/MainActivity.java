@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         alert.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
 
-                myStoreCommentOfTheMood();
+                myStoreCommentOnTheMood();
 
                 System.out.println(getPreferences(MODE_PRIVATE).getString(PREF_KEY_SAD_COMMENT, null));
                 System.out.println(getPreferences(MODE_PRIVATE).getString(PREF_KEY_DISAPPOINTED_COMMENT, null));
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-    private void myStoreCommentOfTheMood(){
+    private void myStoreCommentOnTheMood(){
 
         switch (viewPager.getCurrentItem()){
             case 0:
