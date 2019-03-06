@@ -12,10 +12,10 @@ import markmomo.com.myamazingviewpagertraining.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HistorySuperHappy extends Fragment {
+public class HistorySuperHappyFragment extends Fragment {
 
 
-    public HistorySuperHappy() {
+    public HistorySuperHappyFragment() {
         // Required empty public constructor
     }
 
