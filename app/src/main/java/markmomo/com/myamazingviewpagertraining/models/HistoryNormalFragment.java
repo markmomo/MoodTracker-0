@@ -1,4 +1,4 @@
-package markmomo.com.myamazingviewpagertraining.controllers;
+package markmomo.com.myamazingviewpagertraining.models;
 
 
 import android.content.Context;
@@ -7,21 +7,21 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+
 
 import markmomo.com.myamazingviewpagertraining.R;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HistoryFragment extends Fragment implements View.OnClickListener {
+public class HistoryNormalFragment extends Fragment implements View.OnClickListener {
 
     //2 - Declare callback
     private OnButtonClickedListener mCallback;
-    private ImageButton commentIcon;
 
 
-    public HistoryFragment() {
+
+    public HistoryNormalFragment() {
         // Required empty public constructor
     }
 
@@ -41,9 +41,8 @@ public class HistoryFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View result = inflater.inflate(R.layout.fragment_history, container, false);
-        //result.findViewById(R.id.activity_main_history_icon).setOnClickListener(this);
-        commentIcon = result.findViewById(R.id.fragment_page_root_view);
+        View result = inflater.inflate(R.layout.fragment_history_normal, container, false);
+
         return result;
     }
 

@@ -1,4 +1,4 @@
-package markmomo.com.myamazingviewpagertraining.controllers;
+package markmomo.com.myamazingviewpagertraining.models;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -40,8 +40,8 @@ public class MoodsFragment extends Fragment {
 
         View result = inflater.inflate(R.layout.fragment_moods, container, false);
 
-        linearLayoutRoot = result.findViewById(R.id.fragment_page_root_view);
-        imageViewFragment = result.findViewById(R.id.fragment_page_image);
+        linearLayoutRoot = result.findViewById(R.id.fragment_moods_root);
+        imageViewFragment = result.findViewById(R.id.fragment_moods_image);
 
         this.configureFragment();
         return result;

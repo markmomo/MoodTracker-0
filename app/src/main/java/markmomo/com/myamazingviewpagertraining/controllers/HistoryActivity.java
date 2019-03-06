@@ -6,10 +6,11 @@ import android.util.Log;
 import android.view.View;
 
 import markmomo.com.myamazingviewpagertraining.R;
+import markmomo.com.myamazingviewpagertraining.models.HistoryNormalFragment;
 
-public class HistoryActivity extends AppCompatActivity implements HistoryFragment.OnButtonClickedListener {
+public class HistoryActivity extends AppCompatActivity implements HistoryNormalFragment.OnButtonClickedListener {
 
-    HistoryFragment mHistoryFragment;
+    HistoryNormalFragment mHistoryNormalFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,15 +27,15 @@ public class HistoryActivity extends AppCompatActivity implements HistoryFragmen
     }
 
     private void configureAndShowMainFragment(){
-        // A - Get FragmentManager (Support) and Try to find existing instance of fragment in FrameLayout container
-        mHistoryFragment = (HistoryFragment) getSupportFragmentManager().findFragmentById(R.id.activity_history_root);
 
-        if (mHistoryFragment == null) {
-            // B - Create new main fragment
-            mHistoryFragment = new HistoryFragment();
-            // C - Add it to FrameLayout container
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.activity_history_root, mHistoryFragment)
+        mHistoryNormalFragment = (HistoryNormalFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.activity_history_seven_day_frame_layout);
+
+        if (mHistoryNormalFragment == null) {
+
+            mHistoryNormalFragment = new HistoryNormalFragment();getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.activity_history_seven_day_frame_layout, mHistoryNormalFragment)
                     .commit();
         }
     }

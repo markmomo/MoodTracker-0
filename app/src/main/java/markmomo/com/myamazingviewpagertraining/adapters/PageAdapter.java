@@ -3,7 +3,7 @@ package markmomo.com.myamazingviewpagertraining.adapters;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import markmomo.com.myamazingviewpagertraining.controllers.MoodsFragment;
+import markmomo.com.myamazingviewpagertraining.models.MoodsFragment;
 
 /**
  * Created by markm ON 05/03/2019.

@@ -1,14 +1,14 @@
 <LinearLayout
-    android:id="@+id/fragment_page_root_view"
+    android:id="@+id/fragment_moods_root"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".controllers.MoodsFragment"
+    tools:context=".models.MoodsFragment"
     android:gravity="center">
 
     <ImageView
-        android:id="@+id/fragment_page_image"
+        android:id="@+id/fragment_moods_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

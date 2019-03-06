@@ -22,7 +22,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int buttonIndex;
         buttonIndex = (int)v.getTag();
 
-        if (buttonIndex == 1) displayNoteBox();
+        if (buttonIndex == 1) {
+            displayNoteBox();
+        }
         if (buttonIndex == 2){
             Intent historyActivityIntent = new Intent(MainActivity.this,HistoryActivity.class);
             startActivity(historyActivityIntent);
@@ -34,8 +36,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        noteButtonIcon = findViewById(R.id.activity_main_note_icon);
-        historyButtonIcon = findViewById(R.id.activity_main_history_icon);
+        noteButtonIcon = findViewById(R.id.activity_main_note_icon_button);
+        historyButtonIcon = findViewById(R.id.activity_main_history_icon_button);
         noteButtonIcon.setOnClickListener(this);
         historyButtonIcon.setOnClickListener(this);
         noteButtonIcon.setTag(1);
@@ -63,25 +65,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         alert.setTitle("Commentaire");
         alert.setMessage("Commentaire");
 
-        // Set an EditText view to get user input
         final EditText input = new EditText(this);
         alert.setView(input);
 
         alert.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                // Canceled.
+
             }
         });
         alert.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                // Do something with value!
+
             }
         });
         alert.setCancelable(false);
         alert.create();
         alert.show();
-
     }
-
-
 }
