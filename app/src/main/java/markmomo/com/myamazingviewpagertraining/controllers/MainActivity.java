@@ -2,6 +2,7 @@ package markmomo.com.myamazingviewpagertraining.controllers;
 
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonIndex = (int)v.getTag();
 
         if (buttonIndex == 1) displayNoteBox();
+        if (buttonIndex == 2){
+            Intent historyActivityIntent = new Intent(MainActivity.this,HistoryActivity.class);
+            startActivity(historyActivityIntent);
+        }
     }
 
     @Override
@@ -49,8 +54,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         viewPager.setAdapter(pageAdapter1);
         viewPager.setCurrentItem(2);
 
-        noteButtonIcon.setBackgroundColor(pageAdapter1.getIconColor());
-        historyButtonIcon.setBackgroundColor(pageAdapter1.getIconColor());
+        noteButtonIcon.setBackgroundColor(pageAdapter1.getMainIconsColor());
+        historyButtonIcon.setBackgroundColor(pageAdapter1.getMainIconsColor());
     }
     private void displayNoteBox(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);

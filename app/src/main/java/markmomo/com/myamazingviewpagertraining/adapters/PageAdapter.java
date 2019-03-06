@@ -18,7 +18,7 @@ public class PageAdapter extends FragmentPagerAdapter {
         this.colorsBank = colors;
     }
 
-    public int getIconColor() {
+    public int getMainIconsColor() {
         return mainIconsColor;
     }
 
