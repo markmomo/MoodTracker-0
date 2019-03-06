@@ -14,7 +14,6 @@ import markmomo.com.myamazingviewpagertraining.R;
  * A simple {@link Fragment} subclass.
  */
 public class MoodsFragment extends Fragment {
-
     private LinearLayout linearLayoutRoot;
     private ImageView imageViewFragment;
     private static final String KEY_POSITION = "page number";
@@ -43,11 +42,11 @@ public class MoodsFragment extends Fragment {
         linearLayoutRoot = result.findViewById(R.id.fragment_moods_root);
         imageViewFragment = result.findViewById(R.id.fragment_moods_image);
 
-        this.configureFragment();
+        this.myConfigureFragment();
         return result;
     }
 
-    private void configureFragment() {
+    private void myConfigureFragment() {
         int pageNumb;
         int backColor;
         pageNumb = getArguments().getInt(KEY_POSITION, -1);
@@ -75,4 +74,3 @@ public class MoodsFragment extends Fragment {
         Log.e(getClass().getSimpleName(), "onCreateView called for fragment number " + pageNumb);
     }
 }
-

@@ -1,6 +1,5 @@
 package markmomo.com.myamazingviewpagertraining.models;
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,33 +14,27 @@ import markmomo.com.myamazingviewpagertraining.R;
  * A simple {@link Fragment} subclass.
  */
 public class HistoryNormalFragment extends Fragment implements View.OnClickListener {
-
-    //2 - Declare callback
     private OnButtonClickedListener mCallback;
 
-
-
     public HistoryNormalFragment() {
-        // Required empty public constructor
+
     }
 
-    // 1 - Declare our interface that will be implemented by any container activity
     public interface OnButtonClickedListener {
         public void onButtonClicked(View view);
     }
 
     @Override
     public void onClick(View v) {
-        // 5 - Spread the click to the parent activity
-        mCallback.onButtonClicked(v);
 
+        mCallback.onButtonClicked(v);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View result = inflater.inflate(R.layout.fragment_history_normal, container, false);
+        result.findViewById(R.id.fragment_history_normal_button).setOnClickListener(this);
 
         return result;
     }
@@ -50,18 +43,14 @@ public class HistoryNormalFragment extends Fragment implements View.OnClickListe
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        // 4 - Call the method that creating callback after being attached to parent activity
         this.createCallbackToParentActivity();
     }
 
-    // 3 - Create callback to parent activity
     private void createCallbackToParentActivity(){
         try {
-            //Parent activity will automatically subscribe to callback
             mCallback = (OnButtonClickedListener) getActivity();
         } catch (ClassCastException e) {
             throw new ClassCastException(e.toString()+ " must implement OnButtonClickedListener");
         }
     }
-
 }

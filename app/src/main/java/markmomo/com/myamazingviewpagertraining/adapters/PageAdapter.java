@@ -9,7 +9,6 @@ import markmomo.com.myamazingviewpagertraining.models.MoodsFragment;
  * Created by markm ON 05/03/2019.
  */
 public class PageAdapter extends FragmentPagerAdapter {
-
     private int[] colorsBank;
     private int mainIconsColor;
 
@@ -33,4 +32,3 @@ public class PageAdapter extends FragmentPagerAdapter {
         return(MoodsFragment.newInstance(position, this.colorsBank[position]));
     }
 }
-

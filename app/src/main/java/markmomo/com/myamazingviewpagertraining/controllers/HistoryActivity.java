@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import markmomo.com.myamazingviewpagertraining.R;
 import markmomo.com.myamazingviewpagertraining.models.HistoryDisappointedFragment;
@@ -14,7 +15,10 @@ import markmomo.com.myamazingviewpagertraining.models.HistoryNormalFragment;
 import markmomo.com.myamazingviewpagertraining.models.HistorySadFragment;
 import markmomo.com.myamazingviewpagertraining.models.HistorySuperHappyFragment;
 
-public class HistoryActivity extends AppCompatActivity implements HistoryNormalFragment.OnButtonClickedListener {
+public class HistoryActivity extends AppCompatActivity implements HistoryNormalFragment.OnButtonClickedListener,
+        HistoryDisappointedFragment.OnButtonClickedListener,
+        HistoryHappyFragment.OnButtonClickedListener, HistorySadFragment.OnButtonClickedListener,
+        HistorySuperHappyFragment.OnButtonClickedListener {
 
     @IdRes int DaysBeforeLayout;
     HistorySadFragment mHistorySadFragment;
@@ -38,7 +42,7 @@ public class HistoryActivity extends AppCompatActivity implements HistoryNormalF
     }
     @Override
     public void onButtonClicked(View view) {
-
+        Toast.makeText(this, "Correct", Toast.LENGTH_SHORT).show();
         Log.e(getClass().getSimpleName(), "Button clicked!");
     }
 
@@ -116,5 +120,3 @@ public class HistoryActivity extends AppCompatActivity implements HistoryNormalF
                 .commit();
     }
 }
-
-
