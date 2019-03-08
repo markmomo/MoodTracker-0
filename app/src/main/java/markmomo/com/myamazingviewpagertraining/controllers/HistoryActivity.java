@@ -1,5 +1,7 @@
 package markmomo.com.myamazingviewpagertraining.controllers;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -7,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-
 import markmomo.com.myamazingviewpagertraining.R;
 import markmomo.com.myamazingviewpagertraining.models.HistoryDisappointedFragment;
 import markmomo.com.myamazingviewpagertraining.models.HistoryHappyFragment;
@@ -20,91 +21,126 @@ public class HistoryActivity extends AppCompatActivity implements HistoryNormalF
         HistoryHappyFragment.OnButtonClickedListener, HistorySadFragment.OnButtonClickedListener,
         HistorySuperHappyFragment.OnButtonClickedListener {
 
-    @IdRes int DaysBeforeLayout;
-    HistorySadFragment mHistorySadFragment;
-    HistoryDisappointedFragment mHistoryDisappointedFragment;
-    HistoryNormalFragment mHistoryNormalFragment;
-    HistoryHappyFragment mHistoryHappyFragment;
-    HistorySuperHappyFragment mHistorySuperHappyFragment;
+    @IdRes
+    private int mDayPositionLayout;
+    private SharedPreferences mPreferences;
+
+    //MOOD
+
+    public static final String PREF_KEY_ONE_BEFORE_COMMENT_MOOD = "PREF_KEY_ONE_BEFORE_COMMENT_MOOD";
+    public static final String PREF_KEY_TWO_BEFORE_COMMENT_MOOD = "PREF_KEY_TWO_BEFORE_COMMENT_MOOD";
+    public static final String PREF_KEY_THREE_BEFORE_COMMENT_MOOD = "PREF_KEY_THREE_BEFORE_COMMENT_MOOD";
+    public static final String PREF_KEY_FOUR_BEFORE_COMMENT_MOOD = "PREF_KEY_FOUR_BEFORE_COMMENT_MOOD";
+    public static final String PREF_KEY_FIVE_BEFORE_COMMENT_MOOD = "PREF_KEY_FIVE_BEFORE_COMMENT_MOOD";
+    public static final String PREF_KEY_SIX_BEFORE_COMMENT_MOOD = "PREF_KEY_SIX_BEFORE_COMMENT_MOOD";
+    public static final String PREF_KEY_SEVEN_BEFORE_COMMENT_MOOD = "PREF_KEY_SEVEN_BEFORE_COMMENT_MOOD";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        MyConfigureAndShowHistory(5, 7);
-        MyConfigureAndShowHistory(4, 6);
-        MyConfigureAndShowHistory(3, 5);
-        MyConfigureAndShowHistory(2, 4);
-        MyConfigureAndShowHistory(1, 3);
-        MyConfigureAndShowHistory(2, 2);
-        MyConfigureAndShowHistory(3, 1);
+        int YesterdayMood;
+        int twoDaysLeftMood;
+        int threeDaysLeftMood;
+        int fourDaysLeftMood;
+        int fiveDaysLeftMood;
+        int sixDaysLeftMood;
+        int sevenDaysLeftMood;
+
+        mPreferences = getPreferences(MODE_PRIVATE);
+        Intent intent = getIntent();
+        YesterdayMood = intent.getIntExtra(PREF_KEY_ONE_BEFORE_COMMENT_MOOD,-1);
+        twoDaysLeftMood = intent.getIntExtra(PREF_KEY_TWO_BEFORE_COMMENT_MOOD,-1);
+        threeDaysLeftMood = intent.getIntExtra(PREF_KEY_THREE_BEFORE_COMMENT_MOOD,-1);
+        fourDaysLeftMood = intent.getIntExtra(PREF_KEY_FOUR_BEFORE_COMMENT_MOOD,-1);
+        fiveDaysLeftMood = intent.getIntExtra(PREF_KEY_FIVE_BEFORE_COMMENT_MOOD,-1);
+        sixDaysLeftMood = intent.getIntExtra(PREF_KEY_SIX_BEFORE_COMMENT_MOOD,-1);
+        sevenDaysLeftMood = intent.getIntExtra(PREF_KEY_SEVEN_BEFORE_COMMENT_MOOD,-1);
+
+        MyDisplayFragmentOnPosition(sevenDaysLeftMood, 7);
+        MyDisplayFragmentOnPosition(sixDaysLeftMood, 6);
+        MyDisplayFragmentOnPosition(fiveDaysLeftMood, 5);
+        MyDisplayFragmentOnPosition(fourDaysLeftMood, 4);
+        MyDisplayFragmentOnPosition(threeDaysLeftMood, 3);
+        MyDisplayFragmentOnPosition(twoDaysLeftMood, 2);
+        MyDisplayFragmentOnPosition(YesterdayMood, 1);
+
     }
+
     @Override
     public void onButtonClicked(View view) {
-        Toast.makeText(this, "Correct", Toast.LENGTH_SHORT).show();
+
+
+        Toast.makeText(this, "Correct"+ mPreferences.getInt(PREF_KEY_ONE_BEFORE_COMMENT_MOOD, -1), Toast.LENGTH_SHORT).show();
         Log.e(getClass().getSimpleName(), "Button clicked!");
+
     }
 
-    private void MyConfigureAndShowHistory(int endOfDayMood, int daysBefore) {
+    private void MyDisplayFragmentOnPosition(int currentMood, int position) {
 
-        DaysBeforeLayout = 0;
+        HistorySadFragment mHistorySadFragment;
+        HistoryDisappointedFragment mHistoryDisappointedFragment;
+        HistoryNormalFragment mHistoryNormalFragment;
+        HistoryHappyFragment mHistoryHappyFragment;
+        HistorySuperHappyFragment mHistorySuperHappyFragment;
+        mDayPositionLayout = 0;
 
-        switch (daysBefore) {
+        switch (position) {
             case 1:
-                DaysBeforeLayout = R.id.activity_history_one_day_frame_layout;
+                mDayPositionLayout = R.id.activity_history_one_day_frame_layout;
                 break;
             case 2:
-                DaysBeforeLayout = R.id.activity_history_two_day_frame_layout;
+                mDayPositionLayout = R.id.activity_history_two_day_frame_layout;
                 break;
             case 3:
-                DaysBeforeLayout = R.id.activity_history_three_day_frame_layout;
+                mDayPositionLayout = R.id.activity_history_three_day_frame_layout;
                 break;
             case 4:
-                DaysBeforeLayout = R.id.activity_history_four_day_frame_layout;
+                mDayPositionLayout = R.id.activity_history_four_day_frame_layout;
                 break;
             case 5:
-                DaysBeforeLayout = R.id.activity_history_five_day_frame_layout;
+                mDayPositionLayout = R.id.activity_history_five_day_frame_layout;
                 break;
             case 6:
-                DaysBeforeLayout = R.id.activity_history_six_day_frame_layout;
+                mDayPositionLayout = R.id.activity_history_six_day_frame_layout;
                 break;
             case 7:
-                DaysBeforeLayout = R.id.activity_history_seven_day_frame_layout;
+                mDayPositionLayout = R.id.activity_history_seven_day_frame_layout;
                 break;
         }
-        switch (endOfDayMood) {
-            case 1:
-                mHistorySadFragment = (HistorySadFragment) getSupportFragmentManager().findFragmentById(DaysBeforeLayout);
+        switch (currentMood) {
+            case 0:
+                mHistorySadFragment = (HistorySadFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
                 if (mHistorySadFragment == null) {
                     mHistorySadFragment = new HistorySadFragment();
                     myDisplayFragment(mHistorySadFragment);
                 }
                 break;
-            case 2:
-                mHistoryDisappointedFragment = (HistoryDisappointedFragment) getSupportFragmentManager().findFragmentById(DaysBeforeLayout);
+            case 1:
+                mHistoryDisappointedFragment = (HistoryDisappointedFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
                 if (mHistoryDisappointedFragment == null) {
                     mHistoryDisappointedFragment = new HistoryDisappointedFragment();
                     myDisplayFragment(mHistoryDisappointedFragment);
                 }
                 break;
-            case 3:
-                mHistoryNormalFragment = (HistoryNormalFragment) getSupportFragmentManager().findFragmentById(DaysBeforeLayout);
+            case 2:
+                mHistoryNormalFragment = (HistoryNormalFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
                 if (mHistoryNormalFragment == null) {
                     mHistoryNormalFragment = new HistoryNormalFragment();
                     myDisplayFragment(mHistoryNormalFragment);
                 }
                 break;
-            case 4:
-                mHistoryHappyFragment = (HistoryHappyFragment) getSupportFragmentManager().findFragmentById(DaysBeforeLayout);
+            case 3:
+                mHistoryHappyFragment = (HistoryHappyFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
                 if (mHistoryHappyFragment == null) {
                     mHistoryHappyFragment = new HistoryHappyFragment();
                     myDisplayFragment(mHistoryHappyFragment);
                 }
                 break;
-            case 5:
-                mHistorySuperHappyFragment = (HistorySuperHappyFragment) getSupportFragmentManager().findFragmentById(DaysBeforeLayout);
-                if (mHistoryHappyFragment == null) {
+            case 4:
+                mHistorySuperHappyFragment = (HistorySuperHappyFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
+                if (mHistorySuperHappyFragment == null) {
                     mHistorySuperHappyFragment = new HistorySuperHappyFragment();
                     myDisplayFragment(mHistorySuperHappyFragment);
                     break;
@@ -112,11 +148,11 @@ public class HistoryActivity extends AppCompatActivity implements HistoryNormalF
         }
     }
 
-    public void myDisplayFragment (Fragment fragment){
+    private void myDisplayFragment(Fragment fragment) {
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(DaysBeforeLayout, fragment)
+                .add(mDayPositionLayout, fragment)
                 .commit();
     }
 }
