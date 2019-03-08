@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String PREF_MOOD_ARRAY5 = "PREF_MOOD_ARRAY5";
     public static final String PREF_MOOD_ARRAY6 = "PREF_MOOD_ARRAY6";
     public static final String PREF_MOOD_ARRAY7 = "PREF_MOOD_ARRAY7";
+    public static final String PREF_MOOD_ARRAY8 = "PREF_MOOD_ARRAY8";
     public static final String LAST_TIME_DAY = "LAST_TIME_DAY";
 
     //HISTORY
@@ -186,106 +187,78 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             if (mDayTrackingArray.get(mDayTrackingArray.size()-1) - mDayTrackingArray.get(mDayTrackingArray.size()-2) > 0  && !mDayTrackingArray.isEmpty()){
 
-                if (mMoodHistoryArray.size() < 8){
-                    // ajoute une entrée à l'historique à la suite
-                    switch (mDayTrackingArray.get(mDayTrackingArray.size()-1) - mDayTrackingArray.get(mDayTrackingArray.size()-2)){
-                        case 1 :
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
-                        case 2 :
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
-                        case 3 :
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
-                        case 4 :
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
-                        case 5 :
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
-                        case 6 :
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
-                        case 7 :
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
+                switch (mDayTrackingArray.get(mDayTrackingArray.size()-1) - mDayTrackingArray.get(mDayTrackingArray.size()-2)){
+                    case 1 :
+                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        break;
+                    case 2 :
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        break;
+                    case 3 :
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        break;
+                    case 4 :
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        break;
+                    case 5 :
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        break;
+                    case 6 :
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        break;
+                    case 7 :
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,-1);
+                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        break;
                     }
-                } else {
-                    // retire le dernier élément et ajoute une entrée au début
-                    switch (mDayTrackingArray.get(mDayTrackingArray.size()-1) - mDayTrackingArray.get(mDayTrackingArray.size()-2)){
-                        case 1 :
-                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
-                        case 2 :
-                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
-                        case 3 :
-                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
-                        case 4 :
-                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
-                        case 5 :
-                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
-                        case 6 :
-                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
-                        case 7 :
-                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,-1);
-                            mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                            break;
-                    }
-                }
 
                 while (mDayTrackingArray.size() > 1){
                     // supprime le premier éléments de mDayTrackingArray
@@ -305,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void saveHistory(){
         int Day1,Day2,Day3,Day4,Day5,Day6,Day7;
+        int Day8;
         Day1 = mMoodHistoryArray.get(0);
         Day2 = mMoodHistoryArray.get(1);
         Day3 = mMoodHistoryArray.get(2);
@@ -312,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Day5 = mMoodHistoryArray.get(4);
         Day6 = mMoodHistoryArray.get(5);
         Day7 = mMoodHistoryArray.get(6);
+        Day8 = mMoodHistoryArray.get(7);
         mLastTimeDay = Calendar.getInstance().get(Calendar.MINUTE);
 
         mPreferences.edit().putInt(PREF_MOOD_ARRAY1,Day1).apply();
@@ -321,6 +296,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mPreferences.edit().putInt(PREF_MOOD_ARRAY5,Day5).apply();
         mPreferences.edit().putInt(PREF_MOOD_ARRAY6,Day6).apply();
         mPreferences.edit().putInt(PREF_MOOD_ARRAY7,Day7).apply();
+        mPreferences.edit().putInt(PREF_MOOD_ARRAY8,Day8).apply();
 
         mPreferences.edit().putInt(LAST_TIME_DAY,mLastTimeDay).apply();
     }
@@ -330,6 +306,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mMoodHistoryArray = new ArrayList<>();
         mDayTrackingArray = new ArrayList<>();
         int Day1,Day2,Day3,Day4,Day5,Day6,Day7;
+        int Day8;
+
 
         Day1 = mPreferences.getInt(PREF_MOOD_ARRAY1, -1);
         Day2 = mPreferences.getInt(PREF_MOOD_ARRAY2, -1);
@@ -338,11 +316,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Day5 = mPreferences.getInt(PREF_MOOD_ARRAY5, -1);
         Day6 = mPreferences.getInt(PREF_MOOD_ARRAY6, -1);
         Day7 = mPreferences.getInt(PREF_MOOD_ARRAY7, -1);
+        Day8 = mPreferences.getInt(PREF_MOOD_ARRAY8, -1);
 
         mDayTrackingArray.add(mLastTimeDay);
 
         mMoodHistoryArray.add(Day1);mMoodHistoryArray.add(Day2);mMoodHistoryArray.add(Day3);mMoodHistoryArray.add(Day4);
-        mMoodHistoryArray.add(Day5);mMoodHistoryArray.add(Day6);mMoodHistoryArray.add(Day7);
+        mMoodHistoryArray.add(Day5);mMoodHistoryArray.add(Day6);mMoodHistoryArray.add(Day7);mMoodHistoryArray.add(Day8);
         System.out.println("initialisation de mMoodHistoryArray" + mMoodHistoryArray);
         System.out.println("initialisation de mLastTimeDay" + mLastTimeDay);
         System.out.println("initialisation de mDayTrackingArray" + mDayTrackingArray);
