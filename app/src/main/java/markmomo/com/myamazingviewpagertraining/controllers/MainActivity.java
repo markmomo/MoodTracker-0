@@ -21,12 +21,24 @@ import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private SharedPreferences mPreferences ;
 
+    //PREFERENCES
+    private SharedPreferences mPreferences ;
+    public static final String PREF_MOOD_ARRAY1 = "PREF_MOOD_ARRAY1";
+    public static final String PREF_MOOD_ARRAY2 = "PREF_MOOD_ARRAY2";
+    public static final String PREF_MOOD_ARRAY3 = "PREF_MOOD_ARRAY3";
+    public static final String PREF_MOOD_ARRAY4 = "PREF_MOOD_ARRAY4";
+    public static final String PREF_MOOD_ARRAY5 = "PREF_MOOD_ARRAY5";
+    public static final String PREF_MOOD_ARRAY6 = "PREF_MOOD_ARRAY6";
+    public static final String PREF_MOOD_ARRAY7 = "PREF_MOOD_ARRAY7";
+    public static final String LAST_TIME_DAY = "LAST_TIME_DAY";
+
+    //HISTORY
     private ArrayList<Integer> mDayTrackingArray;
     private ArrayList<Integer> mMoodHistoryArray;
+    private int mCurrentMoodPosition;
+    private String mCommentText;
 
-    public static final String PREF_KEY_START_DAY = "PREF_KEY_START_DAY";
 
     //LAYOUTS
     private ImageButton mNoteButtonIcon ;
@@ -35,46 +47,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText mEditTextBox;
 
     //DATES
-    private int mCurrentDaySaved;
+    private int mLastTimeDay;
     private int mCurrentYear;
     private int mCurrentMonth;
     private int mCurrentDay;
     private int mCurrentHour;
     private int mCurrentMinute;
-    private int mCurrentSecond;
 
-    //COMMENT
-
-    private int mCurrentMoodPosition;
-    private String mCommentText;
-    public static final String PREF_KEY_TODAY_COMMENT = "PREF_KEY_TODAY_COMMENT";
-    public static final String PREF_KEY_ONE_BEFORE_COMMENT = "PREF_KEY_ONE_BEFORE_COMMENT";
-    public static final String PREF_KEY_TWO_BEFORE_COMMENT = "PREF_KEY_TWO_BEFORE_COMMENT";
-    public static final String PREF_KEY_THREE_BEFORE_COMMENT = "PREF_KEY_THREE_BEFORE_COMMENT";
-    public static final String PREF_KEY_FOUR_BEFORE_COMMENT = "PREF_KEY_FOUR_BEFORE_COMMENT";
-    public static final String PREF_KEY_FIVE_BEFORE_COMMENT = "PREF_KEY_FIVE_BEFORE_COMMENT";
-    public static final String PREF_KEY_SIX_BEFORE_COMMENT = "PREF_KEY_SIX_BEFORE_COMMENT";
-    public static final String PREF_KEY_SEVEN_BEFORE_COMMENT = "PREF_KEY_SEVEN_BEFORE_COMMENT";
-
-    //MOOD
-    public static final String PREF_KEY_TODAY_COMMENT_MOOD = "PREF_KEY_TODAY_COMMENT_MOOD";
-    public static final String PREF_KEY_ONE_BEFORE_COMMENT_MOOD = "PREF_KEY_ONE_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_TWO_BEFORE_COMMENT_MOOD = "PREF_KEY_TWO_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_THREE_BEFORE_COMMENT_MOOD = "PREF_KEY_THREE_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_FOUR_BEFORE_COMMENT_MOOD = "PREF_KEY_FOUR_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_FIVE_BEFORE_COMMENT_MOOD = "PREF_KEY_FIVE_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_SIX_BEFORE_COMMENT_MOOD = "PREF_KEY_SIX_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_SEVEN_BEFORE_COMMENT_MOOD = "PREF_KEY_SEVEN_BEFORE_COMMENT_MOOD";
-
-    //DAYS
-    public static final String PREF_KEY_TODAY_DAY = "PREF_KEY_TODAY_DAY";
-    public static final String PREF_KEY_ONE_BEFORE_DAY = "PREF_KEY_ONE_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_TWO_BEFORE_DAY = "PREF_KEY_TWO_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_THREE_BEFORE_DAY = "PREF_KEY_THREE_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_FOUR_BEFORE_DAY = "PREF_KEY_FOUR_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_FIVE_BEFORE_DAY = "PREF_KEY_FIVE_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_SIX_BEFORE_DAY = "PREF_KEY_SIX_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_SEVEN_BEFORE_DAY = "PREF_KEY_SEVEN_BEFORE_COMMENT_MOOD";
 
     @Override
     public void onClick(View v) {
@@ -86,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (buttonIndex == 2){
             Intent intent = new Intent(MainActivity.this,HistoryActivity.class);
-            intent.putExtra(PREF_KEY_ONE_BEFORE_COMMENT_MOOD,mPreferences.getInt(PREF_KEY_ONE_BEFORE_COMMENT_MOOD, -1));
+            intent.putIntegerArrayListExtra("moodHistoryArray",mMoodHistoryArray);
             startActivity(intent);
         }
     }
@@ -95,19 +74,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mDayTrackingArray = new ArrayList<>();
-        mMoodHistoryArray = new ArrayList<>();
-
-
-
-        mPreferences = getPreferences(MODE_PRIVATE);
-        mCurrentMinute = Calendar.getInstance().get(Calendar.MINUTE);
-        mPreferences.edit().putInt(PREF_KEY_START_DAY, mCurrentMinute).apply();
-
-
-
-        mCommentText = "";
-
         //LAYOUTS
         mNoteButtonIcon = findViewById(R.id.activity_main_note_icon_button);
         mHistoryButtonIcon = findViewById(R.id.activity_main_history_icon_button);
@@ -120,11 +86,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mNoteButtonIcon.setTag(1);
         mHistoryButtonIcon.setTag(2);
 
+        //LOADING PREFERENCES
+        mPreferences = getPreferences(MODE_PRIVATE);
+        initializeHistory();
+
+        mCommentText = "";
 
 
         //ACTIONS
-
         this.configureViewPager();
+        this.trackingHistory();
 
     }
 
@@ -133,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         PageAdapter pageAdapter;
         pageAdapter = new PageAdapter(getSupportFragmentManager(), getResources().getIntArray(R.array.colorPagesViewPager));
         mViewPager.setAdapter(pageAdapter);
-        mViewPager.setCurrentItem(2);
+        mViewPager.setCurrentItem(3);
 
         mNoteButtonIcon.setBackgroundColor(pageAdapter.getMainIconsColor());
         mHistoryButtonIcon.setBackgroundColor(pageAdapter.getMainIconsColor());
@@ -148,13 +119,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         alert.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-
             }
         });
         alert.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 mCommentText = mEditTextBox.getText().toString();
-
             }
         });
         alert.setCancelable(false);
@@ -182,69 +151,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return yearString + "-" + monthString + "-" + dayString + "-" + hourString + "-" + minuteString;
     }
 
-    private void printTodayPreferences(){
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_TODAY_DAY : " + mPreferences.getInt(PREF_KEY_TODAY_DAY, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_TODAY_COMMENT : " + mPreferences.getString(PREF_KEY_TODAY_COMMENT, null));
-        System.out.println("PREF_KEY_TODAY_COMMENT_MOOD : " + mPreferences.getInt(PREF_KEY_TODAY_COMMENT_MOOD, -1));
-    }
-
-
-    private void printPreferences (){
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_TODAY_DAY : " + mPreferences.getInt(PREF_KEY_TODAY_DAY, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_TODAY_COMMENT : " + mPreferences.getString(PREF_KEY_TODAY_COMMENT, null));
-        System.out.println("PREF_KEY_TODAY_COMMENT_MOOD : " + mPreferences.getInt(PREF_KEY_TODAY_COMMENT_MOOD, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_ONE_BEFORE_DAY : " + mPreferences.getInt(PREF_KEY_ONE_BEFORE_DAY, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_ONE_BEFORE_COMMENT : " + mPreferences.getString(PREF_KEY_ONE_BEFORE_COMMENT, null));
-        System.out.println("PREF_KEY_ONE_BEFORE_COMMENT_MOOD : " + mPreferences.getInt(PREF_KEY_ONE_BEFORE_COMMENT_MOOD, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_TWO_BEFORE_DAY : " + mPreferences.getInt(PREF_KEY_TWO_BEFORE_DAY, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_TWO_BEFORE_COMMENT : " + mPreferences.getString(PREF_KEY_TWO_BEFORE_COMMENT, null));
-        System.out.println("PREF_KEY_TWO_BEFORE_COMMENT_MOOD : " + mPreferences.getInt(PREF_KEY_TWO_BEFORE_COMMENT_MOOD, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_THREE_BEFORE_DAY : " + mPreferences.getInt(PREF_KEY_THREE_BEFORE_DAY, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_THREE_BEFORE_COMMENT : " + mPreferences.getString(PREF_KEY_THREE_BEFORE_COMMENT, null));
-        System.out.println("PREF_KEY_THREE_BEFORE_COMMENT_MOOD : " + mPreferences.getInt(PREF_KEY_THREE_BEFORE_COMMENT_MOOD, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_FOUR_BEFORE_DAY : " + mPreferences.getInt(PREF_KEY_FOUR_BEFORE_DAY, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_FOUR_BEFORE_COMMENT : " + mPreferences.getString(PREF_KEY_FOUR_BEFORE_COMMENT, null));
-        System.out.println("PREF_KEY_FOUR_BEFORE_COMMENT_MOOD : " + mPreferences.getInt(PREF_KEY_FOUR_BEFORE_COMMENT_MOOD, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_FIVE_BEFORE_DAY : " + mPreferences.getInt(PREF_KEY_FIVE_BEFORE_DAY, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_FIVE_BEFORE_COMMENT : " + mPreferences.getString(PREF_KEY_FIVE_BEFORE_COMMENT, null));
-        System.out.println("PREF_KEY_FIVE_BEFORE_COMMENT_MOOD : " + mPreferences.getInt(PREF_KEY_FIVE_BEFORE_COMMENT_MOOD, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_SIX_BEFORE_DAY : " + mPreferences.getInt(PREF_KEY_SIX_BEFORE_DAY, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_SIX_BEFORE_COMMENT : " + mPreferences.getString(PREF_KEY_SIX_BEFORE_COMMENT, null));
-        System.out.println("PREF_KEY_SIX_BEFORE_COMMENT_MOOD : " + mPreferences.getInt(PREF_KEY_SIX_BEFORE_COMMENT_MOOD, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_SEVEN_BEFORE_DAY : " + mPreferences.getInt(PREF_KEY_SEVEN_BEFORE_DAY, -1));
-        System.out.println("---------------------------------------------------------------------------------------------");
-        System.out.println("PREF_KEY_SEVEN_BEFORE_COMMENT : " + mPreferences.getString(PREF_KEY_SEVEN_BEFORE_COMMENT, null));
-        System.out.println("PREF_KEY_SEVEN_BEFORE_COMMENT_MOOD : " + mPreferences.getInt(PREF_KEY_SEVEN_BEFORE_COMMENT_MOOD, -1));
-    }
-
-    private void putStatsInPrefKey (){
-
-        mPreferences.edit().putInt(PREF_KEY_TODAY_DAY, mCurrentMinute).apply();
-        mPreferences.edit().putString(PREF_KEY_TODAY_COMMENT, mCommentText).apply();
-        mPreferences.edit().putInt(PREF_KEY_TODAY_COMMENT_MOOD, mCurrentMoodPosition).apply();
-
-
-    }
-
-    private void updateHistoric(){
-
+    private void trackingHistory(){
 
         final Handler handler = new Handler(getMainLooper());
         handler.postDelayed(new Runnable() {
@@ -257,32 +164,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mCurrentYear = Calendar.getInstance().get(Calendar.YEAR);
                 mCurrentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
                 mCurrentMinute = Calendar.getInstance().get(Calendar.MINUTE);
-                mCurrentSecond = Calendar.getInstance().get(Calendar.SECOND);
                 mCurrentMoodPosition = mViewPager.getCurrentItem();
-
-                mDayTrackingArray.add(mCurrentSecond);
+                mDayTrackingArray.add(mCurrentMinute);
 
                 System.out.println("------------------------------------------------------------------------");
                 System.out.println((new SimpleDateFormat("HH:mm:ss", Locale.FRANCE).format(new Date())));
-                System.out.println(mCurrentYear + "-" + mCurrentMonth + "-" + mCurrentDay + "-" + mCurrentHour + "-" + mCurrentMinute);
-                System.out.println("je ne me suis pas connecté depuis 1 ou plusieurs jours "+ myIsYesterday());
+                System.out.println(getCurrentDate());
+                whenLastTime();
                 System.out.println("------------------------------------------------------------------------");
 
+                updateMoodHistory();
 
-                updateMoodHistoryArrayList();
-
-
-                handler.postDelayed(this, 1000);
+                handler.postDelayed(this, 20000);
             }
         }, 10);
     }
 
-    private void updateMoodHistoryArrayList(){
+    private void updateMoodHistory(){
+
         while (mDayTrackingArray.size()!=1){
 
             if (mDayTrackingArray.get(mDayTrackingArray.size()-1) - mDayTrackingArray.get(mDayTrackingArray.size()-2) > 0  && !mDayTrackingArray.isEmpty()){
 
-                if (mMoodHistoryArray.size() < 7){
+                if (mMoodHistoryArray.size() < 8){
                     // ajoute une entrée à l'historique à la suite
                     switch (mDayTrackingArray.get(mDayTrackingArray.size()-1) - mDayTrackingArray.get(mDayTrackingArray.size()-2)){
                         case 1 :
@@ -384,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 while (mDayTrackingArray.size() > 1){
-                    // suprime le premier éléments de mDayTrackingArray
+                    // supprime le premier éléments de mDayTrackingArray
                     mDayTrackingArray.remove(0);
                     System.out.println("La liste des jours a été nettoyée car on est passé au jour suivant");
                 }
@@ -394,56 +298,94 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mDayTrackingArray.remove(mDayTrackingArray.size()-1);
                 System.out.println("le dernier éléméent a été retiré de la liste des jours car identique au précédent");
             }
-
         }
         System.out.println("voici le tracking des jours" + mDayTrackingArray);
         System.out.println("voici l'historique des humeur" + mMoodHistoryArray);
     }
 
+    private void saveHistory(){
+        int Day1,Day2,Day3,Day4,Day5,Day6,Day7;
+        Day1 = mMoodHistoryArray.get(0);
+        Day2 = mMoodHistoryArray.get(1);
+        Day3 = mMoodHistoryArray.get(2);
+        Day4 = mMoodHistoryArray.get(3);
+        Day5 = mMoodHistoryArray.get(4);
+        Day6 = mMoodHistoryArray.get(5);
+        Day7 = mMoodHistoryArray.get(6);
+        mLastTimeDay = Calendar.getInstance().get(Calendar.MINUTE);
 
+        mPreferences.edit().putInt(PREF_MOOD_ARRAY1,Day1).apply();
+        mPreferences.edit().putInt(PREF_MOOD_ARRAY2,Day2).apply();
+        mPreferences.edit().putInt(PREF_MOOD_ARRAY3,Day3).apply();
+        mPreferences.edit().putInt(PREF_MOOD_ARRAY4,Day4).apply();
+        mPreferences.edit().putInt(PREF_MOOD_ARRAY5,Day5).apply();
+        mPreferences.edit().putInt(PREF_MOOD_ARRAY6,Day6).apply();
+        mPreferences.edit().putInt(PREF_MOOD_ARRAY7,Day7).apply();
 
+        mPreferences.edit().putInt(LAST_TIME_DAY,mLastTimeDay).apply();
+    }
 
+    private void initializeHistory(){
+        mLastTimeDay = mPreferences.getInt(LAST_TIME_DAY,Calendar.getInstance().get(Calendar.MINUTE));
+        mMoodHistoryArray = new ArrayList<>();
+        mDayTrackingArray = new ArrayList<>();
+        int Day1,Day2,Day3,Day4,Day5,Day6,Day7;
 
-    private boolean myIsYesterday(){
-        return mCurrentMinute > mPreferences.getInt(PREF_KEY_TODAY_DAY, 0);
+        Day1 = mPreferences.getInt(PREF_MOOD_ARRAY1, -1);
+        Day2 = mPreferences.getInt(PREF_MOOD_ARRAY2, -1);
+        Day3 = mPreferences.getInt(PREF_MOOD_ARRAY3, -1);
+        Day4 = mPreferences.getInt(PREF_MOOD_ARRAY4, -1);
+        Day5 = mPreferences.getInt(PREF_MOOD_ARRAY5, -1);
+        Day6 = mPreferences.getInt(PREF_MOOD_ARRAY6, -1);
+        Day7 = mPreferences.getInt(PREF_MOOD_ARRAY7, -1);
+
+        mDayTrackingArray.add(mLastTimeDay);
+
+        mMoodHistoryArray.add(Day1);mMoodHistoryArray.add(Day2);mMoodHistoryArray.add(Day3);mMoodHistoryArray.add(Day4);
+        mMoodHistoryArray.add(Day5);mMoodHistoryArray.add(Day6);mMoodHistoryArray.add(Day7);
+        System.out.println("initialisation de mMoodHistoryArray" + mMoodHistoryArray);
+        System.out.println("initialisation de mLastTimeDay" + mLastTimeDay);
+        System.out.println("initialisation de mDayTrackingArray" + mDayTrackingArray);
+    }
+
+    private void whenLastTime() {
+        int when = mCurrentMinute - mLastTimeDay;
+        if (when > 0){
+            System.out.println("Je ne me suis pas connecté depuis " + when + " jours");
+            when = 0;
+        } else{
+            System.out.println("Je ne me suis déja connecté aujourd'hui");
+        }
     }
 
     @Override
     protected void onStart() {
-        mCurrentDaySaved = mPreferences.getInt(PREF_KEY_TODAY_DAY, 0);
         super.onStart();
-        updateHistoric();
         System.out.println("onStart!!!!!!!!!!!onStart!!!!!!!!!!!!!onStart!!");
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         System.out.println("onPause!!!!!!!!!!!onPause!!!!!!!!!!!!!onPause!!");
-
-        //myPrintPreferences ();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         System.out.println("onResume!!!!!!!!!!!onResume!!!!!!!!!!!!!onResume!!");
-        //myPrintPreferences ();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        saveHistory();
         System.out.println("onStop!!!!!!!!!!!onStop!!!!!!!!!!!!!onStop!!");
-        //myPrintPreferences ();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         System.out.println("onDestroy!!!!!!!!!!!onDestroy!!!!!!!!!!!!!onDestroy!!");
-
-        //myPrintPreferences ();
     }
 }

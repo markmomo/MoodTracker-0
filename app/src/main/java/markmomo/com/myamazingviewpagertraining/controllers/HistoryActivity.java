@@ -1,7 +1,6 @@
 package markmomo.com.myamazingviewpagertraining.controllers;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +8,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+
 import markmomo.com.myamazingviewpagertraining.R;
 import markmomo.com.myamazingviewpagertraining.models.HistoryDisappointedFragment;
 import markmomo.com.myamazingviewpagertraining.models.HistoryHappyFragment;
@@ -23,48 +25,31 @@ public class HistoryActivity extends AppCompatActivity implements HistoryNormalF
 
     @IdRes
     private int mDayPositionLayout;
-    private SharedPreferences mPreferences;
 
-    //MOOD
 
-    public static final String PREF_KEY_ONE_BEFORE_COMMENT_MOOD = "PREF_KEY_ONE_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_TWO_BEFORE_COMMENT_MOOD = "PREF_KEY_TWO_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_THREE_BEFORE_COMMENT_MOOD = "PREF_KEY_THREE_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_FOUR_BEFORE_COMMENT_MOOD = "PREF_KEY_FOUR_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_FIVE_BEFORE_COMMENT_MOOD = "PREF_KEY_FIVE_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_SIX_BEFORE_COMMENT_MOOD = "PREF_KEY_SIX_BEFORE_COMMENT_MOOD";
-    public static final String PREF_KEY_SEVEN_BEFORE_COMMENT_MOOD = "PREF_KEY_SEVEN_BEFORE_COMMENT_MOOD";
+    ArrayList<Integer> mMoodHistory;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        int YesterdayMood;
-        int twoDaysLeftMood;
-        int threeDaysLeftMood;
-        int fourDaysLeftMood;
-        int fiveDaysLeftMood;
-        int sixDaysLeftMood;
-        int sevenDaysLeftMood;
+        mMoodHistory = new ArrayList<>();
 
-        mPreferences = getPreferences(MODE_PRIVATE);
+
+
         Intent intent = getIntent();
-        YesterdayMood = intent.getIntExtra(PREF_KEY_ONE_BEFORE_COMMENT_MOOD,-1);
-        twoDaysLeftMood = intent.getIntExtra(PREF_KEY_TWO_BEFORE_COMMENT_MOOD,-1);
-        threeDaysLeftMood = intent.getIntExtra(PREF_KEY_THREE_BEFORE_COMMENT_MOOD,-1);
-        fourDaysLeftMood = intent.getIntExtra(PREF_KEY_FOUR_BEFORE_COMMENT_MOOD,-1);
-        fiveDaysLeftMood = intent.getIntExtra(PREF_KEY_FIVE_BEFORE_COMMENT_MOOD,-1);
-        sixDaysLeftMood = intent.getIntExtra(PREF_KEY_SIX_BEFORE_COMMENT_MOOD,-1);
-        sevenDaysLeftMood = intent.getIntExtra(PREF_KEY_SEVEN_BEFORE_COMMENT_MOOD,-1);
 
-        MyDisplayFragmentOnPosition(sevenDaysLeftMood, 7);
-        MyDisplayFragmentOnPosition(sixDaysLeftMood, 6);
-        MyDisplayFragmentOnPosition(fiveDaysLeftMood, 5);
-        MyDisplayFragmentOnPosition(fourDaysLeftMood, 4);
-        MyDisplayFragmentOnPosition(threeDaysLeftMood, 3);
-        MyDisplayFragmentOnPosition(twoDaysLeftMood, 2);
-        MyDisplayFragmentOnPosition(YesterdayMood, 1);
+        mMoodHistory = intent.getIntegerArrayListExtra("moodHistoryArray");
+
+        MyDisplayFragmentOnPosition(mMoodHistory.get(7), 7);
+        MyDisplayFragmentOnPosition(mMoodHistory.get(6), 6);
+        MyDisplayFragmentOnPosition(mMoodHistory.get(5), 5);
+        MyDisplayFragmentOnPosition(mMoodHistory.get(4), 4);
+        MyDisplayFragmentOnPosition(mMoodHistory.get(3), 3);
+        MyDisplayFragmentOnPosition(mMoodHistory.get(2), 2);
+        MyDisplayFragmentOnPosition(mMoodHistory.get(1), 1);
 
     }
 
@@ -72,7 +57,7 @@ public class HistoryActivity extends AppCompatActivity implements HistoryNormalF
     public void onButtonClicked(View view) {
 
 
-        Toast.makeText(this, "Correct"+ mPreferences.getInt(PREF_KEY_ONE_BEFORE_COMMENT_MOOD, -1), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Correct", Toast.LENGTH_SHORT).show();
         Log.e(getClass().getSimpleName(), "Button clicked!");
 
     }
