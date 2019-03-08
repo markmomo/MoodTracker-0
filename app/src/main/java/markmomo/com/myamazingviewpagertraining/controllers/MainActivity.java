@@ -14,32 +14,22 @@ import android.widget.ImageButton;
 import markmomo.com.myamazingviewpagertraining.adapters.PageAdapter;
 import markmomo.com.myamazingviewpagertraining.R;
 import android.os.Handler;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //PREFERENCES
     private SharedPreferences mPreferences ;
-    public static final String PREF_MOOD_ARRAY1 = "PREF_MOOD_ARRAY1";
-    public static final String PREF_MOOD_ARRAY2 = "PREF_MOOD_ARRAY2";
-    public static final String PREF_MOOD_ARRAY3 = "PREF_MOOD_ARRAY3";
-    public static final String PREF_MOOD_ARRAY4 = "PREF_MOOD_ARRAY4";
-    public static final String PREF_MOOD_ARRAY5 = "PREF_MOOD_ARRAY5";
-    public static final String PREF_MOOD_ARRAY6 = "PREF_MOOD_ARRAY6";
-    public static final String PREF_MOOD_ARRAY7 = "PREF_MOOD_ARRAY7";
-    public static final String PREF_MOOD_ARRAY8 = "PREF_MOOD_ARRAY8";
-    public static final String LAST_TIME_DAY = "LAST_TIME_DAY";
+    public static final String [] PREF_MOOD_ARRAY = new String[]{"PREF_MOOD_ARRAY1","PREF_MOOD_ARRAY2","PREF_MOOD_ARRAY3","PREF_MOOD_ARRAY4",
+            "PREF_MOOD_ARRAY5","PREF_MOOD_ARRAY6","PREF_MOOD_ARRAY7","PREF_MOOD_ARRAY8"};
+
+    public static final String PREF_LAST_TIME_DAY = "LAST_TIME_DAY";
 
     //HISTORY
     private ArrayList<Integer> mDayTrackingArray;
     private ArrayList<Integer> mMoodHistoryArray;
     private int mCurrentMoodPosition;
-    private String mCommentText;
-
 
     //LAYOUTS
     private ImageButton mNoteButtonIcon ;
@@ -49,11 +39,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //DATES
     private int mLastTimeDay;
-    private int mCurrentYear;
-    private int mCurrentMonth;
-    private int mCurrentDay;
-    private int mCurrentHour;
     private int mCurrentMinute;
+    private int mCurrentDay;
 
 
     @Override
@@ -75,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //LAYOUTS
         mNoteButtonIcon = findViewById(R.id.activity_main_note_icon_button);
         mHistoryButtonIcon = findViewById(R.id.activity_main_history_icon_button);
@@ -90,9 +78,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //LOADING PREFERENCES
         mPreferences = getPreferences(MODE_PRIVATE);
         initializeHistory();
-
-        mCommentText = "";
-
 
         //ACTIONS
         this.configureViewPager();
@@ -124,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         alert.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                mCommentText = mEditTextBox.getText().toString();
+                //mCommentText = mEditTextBox.getText().toString();
             }
         });
         alert.setCancelable(false);
@@ -137,19 +122,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private String getCurrentDate(){
 
-        int year = Calendar.getInstance().get(Calendar.YEAR);
-        int month = Calendar.getInstance().get(Calendar.MONTH)+1;
-        int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        int minute = Calendar.getInstance().get(Calendar.MINUTE);
-
-        String yearString = String.valueOf(year);
-        String monthString = String.valueOf(month);
-        String dayString = String.valueOf(day);
-        String hourString = String.valueOf(hour);
-        String minuteString = String.valueOf(minute);
-
-        return yearString + "-" + monthString + "-" + dayString + "-" + hourString + "-" + minuteString;
+        return "Year : " + String.valueOf(Calendar.getInstance().get(Calendar.YEAR)) +" Month : "
+                + String.valueOf(Calendar.getInstance().get(Calendar.MONTH+1)) + " Day : "
+                + String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) + " Hour : "
+                + String.valueOf(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + " Minute : "
+                +  String.valueOf(Calendar.getInstance().get(Calendar.MINUTE));
     }
 
     private void trackingHistory(){
@@ -160,21 +137,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run() {
 
-                mCurrentDay = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-                mCurrentMonth = Calendar.getInstance().get(Calendar.MONTH)+1;
-                mCurrentYear = Calendar.getInstance().get(Calendar.YEAR);
-                mCurrentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-                mCurrentMinute = Calendar.getInstance().get(Calendar.MINUTE);
+                mCurrentDay = day();
+                mCurrentMinute = minute();
                 mCurrentMoodPosition = mViewPager.getCurrentItem();
                 mDayTrackingArray.add(mCurrentMinute);
 
+                updateMoodHistory();
+
                 System.out.println("------------------------------------------------------------------------");
-                System.out.println((new SimpleDateFormat("HH:mm:ss", Locale.FRANCE).format(new Date())));
                 System.out.println(getCurrentDate());
+                System.out.println(mCurrentDay+""+mCurrentMinute);
                 whenLastTime();
                 System.out.println("------------------------------------------------------------------------");
-
-                updateMoodHistory();
 
                 handler.postDelayed(this, 20000);
             }
@@ -199,142 +173,119 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
                         break;
                     case 3 :
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
+                        for(int i = 0; i < 2; i ++){
+                            mMoodHistoryArray.add(0,-1);
+                        }
                         mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        for(int i = 0; i < 3; i ++){
+                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        }
                         break;
                     case 4 :
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
+                        for(int i = 0; i < 3; i ++){
+                            mMoodHistoryArray.add(0,-1);
+                        }
                         mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        for(int i = 0; i < 4; i ++){
+                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        }
                         break;
                     case 5 :
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
+                        for(int i = 0; i < 4; i ++){
+                            mMoodHistoryArray.add(0,-1);
+                        }
                         mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        for(int i = 0; i < 5; i ++){
+                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        }
                         break;
                     case 6 :
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
+                        for(int i = 0; i < 5; i ++){
+                            mMoodHistoryArray.add(0,-1);
+                        }
                         mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        for(int i = 0; i < 6; i ++){
+                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        }
                         break;
                     case 7 :
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,-1);
+                        for(int i = 0; i < 6; i ++){
+                            mMoodHistoryArray.add(0,-1);
+                        }
                         mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        for(int i = 0; i < 7; i ++){
+                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+                        }
                         break;
                     }
 
                 while (mDayTrackingArray.size() > 1){
-                    // supprime le premier éléments de mDayTrackingArray
+
                     mDayTrackingArray.remove(0);
-                    System.out.println("La liste des jours a été nettoyée car on est passé au jour suivant");
+                    System.out.println("mDayTrackingArray cleared except one item");
                 }
 
             } else if (!mDayTrackingArray.isEmpty()) {
-                // supprime le dernier éléments de mDayTrackingArray
+
                 mDayTrackingArray.remove(mDayTrackingArray.size()-1);
-                System.out.println("le dernier éléméent a été retiré de la liste des jours car identique au précédent");
+                System.out.println("mDayTrackingArray last Item removed");
             }
         }
-        System.out.println("voici le tracking des jours" + mDayTrackingArray);
-        System.out.println("voici l'historique des humeur" + mMoodHistoryArray);
+        System.out.println("mDayTrackingArray = " + mDayTrackingArray);
+        System.out.println("mMoodHistoryArray = " + mMoodHistoryArray);
     }
 
     private void saveHistory(){
-        int Day1,Day2,Day3,Day4,Day5,Day6,Day7;
-        int Day8;
-        Day1 = mMoodHistoryArray.get(0);
-        Day2 = mMoodHistoryArray.get(1);
-        Day3 = mMoodHistoryArray.get(2);
-        Day4 = mMoodHistoryArray.get(3);
-        Day5 = mMoodHistoryArray.get(4);
-        Day6 = mMoodHistoryArray.get(5);
-        Day7 = mMoodHistoryArray.get(6);
-        Day8 = mMoodHistoryArray.get(7);
-        mLastTimeDay = Calendar.getInstance().get(Calendar.MINUTE);
+        int []Day = new int[]{mMoodHistoryArray.get(0),mMoodHistoryArray.get(1),mMoodHistoryArray.get(2),mMoodHistoryArray.get(3),
+                mMoodHistoryArray.get(4),mMoodHistoryArray.get(5),mMoodHistoryArray.get(6),mMoodHistoryArray.get(7)};
 
-        mPreferences.edit().putInt(PREF_MOOD_ARRAY1,Day1).apply();
-        mPreferences.edit().putInt(PREF_MOOD_ARRAY2,Day2).apply();
-        mPreferences.edit().putInt(PREF_MOOD_ARRAY3,Day3).apply();
-        mPreferences.edit().putInt(PREF_MOOD_ARRAY4,Day4).apply();
-        mPreferences.edit().putInt(PREF_MOOD_ARRAY5,Day5).apply();
-        mPreferences.edit().putInt(PREF_MOOD_ARRAY6,Day6).apply();
-        mPreferences.edit().putInt(PREF_MOOD_ARRAY7,Day7).apply();
-        mPreferences.edit().putInt(PREF_MOOD_ARRAY8,Day8).apply();
-
-        mPreferences.edit().putInt(LAST_TIME_DAY,mLastTimeDay).apply();
+        for (int i = 0;i<8;i++){
+            mPreferences.edit().putInt(PREF_MOOD_ARRAY[i],Day[i]).apply();
+        }
+        mLastTimeDay = minute();
+        mPreferences.edit().putInt(PREF_LAST_TIME_DAY,mLastTimeDay).apply();
     }
 
     private void initializeHistory(){
-        mLastTimeDay = mPreferences.getInt(LAST_TIME_DAY,Calendar.getInstance().get(Calendar.MINUTE));
+        mLastTimeDay = mPreferences.getInt(PREF_LAST_TIME_DAY,minute());
         mMoodHistoryArray = new ArrayList<>();
         mDayTrackingArray = new ArrayList<>();
-        int Day1,Day2,Day3,Day4,Day5,Day6,Day7;
-        int Day8;
 
-
-        Day1 = mPreferences.getInt(PREF_MOOD_ARRAY1, -1);
-        Day2 = mPreferences.getInt(PREF_MOOD_ARRAY2, -1);
-        Day3 = mPreferences.getInt(PREF_MOOD_ARRAY3, -1);
-        Day4 = mPreferences.getInt(PREF_MOOD_ARRAY4, -1);
-        Day5 = mPreferences.getInt(PREF_MOOD_ARRAY5, -1);
-        Day6 = mPreferences.getInt(PREF_MOOD_ARRAY6, -1);
-        Day7 = mPreferences.getInt(PREF_MOOD_ARRAY7, -1);
-        Day8 = mPreferences.getInt(PREF_MOOD_ARRAY8, -1);
-
+        for (int i = 0;i<8;i++){
+            int []Day = new int[]{  mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),
+                                    mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),
+                                    mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),
+                                    mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),mPreferences.getInt(PREF_MOOD_ARRAY[i], -1)};
+            mMoodHistoryArray.add(Day[i]);
+        }
         mDayTrackingArray.add(mLastTimeDay);
 
-        mMoodHistoryArray.add(Day1);mMoodHistoryArray.add(Day2);mMoodHistoryArray.add(Day3);mMoodHistoryArray.add(Day4);
-        mMoodHistoryArray.add(Day5);mMoodHistoryArray.add(Day6);mMoodHistoryArray.add(Day7);mMoodHistoryArray.add(Day8);
-        System.out.println("initialisation de mMoodHistoryArray" + mMoodHistoryArray);
-        System.out.println("initialisation de mLastTimeDay" + mLastTimeDay);
-        System.out.println("initialisation de mDayTrackingArray" + mDayTrackingArray);
+        System.out.println("initialization mMoodHistoryArray = " + mMoodHistoryArray);
+        System.out.println("initialization mLastTimeDay = " + mLastTimeDay);
+        System.out.println("initialization mDayTrackingArray = " + mDayTrackingArray);
+    }
+
+    public int minute(){
+        return Calendar.getInstance().get(Calendar.MINUTE);
+    }
+    public int day(){
+        return  Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+    }
+    public int month(){
+        return Calendar.getInstance().get(Calendar.MONTH+1);
+    }
+    public int year(){
+        return Calendar.getInstance().get(Calendar.YEAR);
+    }
+    public int hour(){
+        return Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
     }
 
     private void whenLastTime() {
         int when = mCurrentMinute - mLastTimeDay;
-        if (when > 0){
-            System.out.println("Je ne me suis pas connecté depuis " + when + " jours");
-            when = 0;
-        } else{
-            System.out.println("Je ne me suis déja connecté aujourd'hui");
-        }
+
+        if (when > 0)System.out.println("Last connexion " + when + " days ago");
+        else System.out.println("Last connexion today!!!");
     }
 
     @Override
@@ -359,6 +310,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStop() {
         super.onStop();
         saveHistory();
+        //mPreferences.edit().clear().apply();
         System.out.println("onStop!!!!!!!!!!!onStop!!!!!!!!!!!!!onStop!!");
     }
 

@@ -25,8 +25,6 @@ public class HistoryActivity extends AppCompatActivity implements HistoryNormalF
 
     @IdRes
     private int mDayPositionLayout;
-
-
     ArrayList<Integer> mMoodHistory;
 
 
@@ -37,20 +35,13 @@ public class HistoryActivity extends AppCompatActivity implements HistoryNormalF
 
         mMoodHistory = new ArrayList<>();
 
-
-
         Intent intent = getIntent();
 
         mMoodHistory = intent.getIntegerArrayListExtra("moodHistoryArray");
 
-        MyDisplayFragmentOnPosition(mMoodHistory.get(7), 7);
-        MyDisplayFragmentOnPosition(mMoodHistory.get(6), 6);
-        MyDisplayFragmentOnPosition(mMoodHistory.get(5), 5);
-        MyDisplayFragmentOnPosition(mMoodHistory.get(4), 4);
-        MyDisplayFragmentOnPosition(mMoodHistory.get(3), 3);
-        MyDisplayFragmentOnPosition(mMoodHistory.get(2), 2);
-        MyDisplayFragmentOnPosition(mMoodHistory.get(1), 1);
-
+        for (int i = 0; i < 7; i++){
+            MyDisplayFragmentOnPosition(mMoodHistory.get(i+1), i+1);
+        }
     }
 
     @Override
