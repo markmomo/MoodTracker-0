@@ -8,9 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-
 import java.util.ArrayList;
-
 import markmomo.com.myamazingviewpagertraining.R;
 import markmomo.com.myamazingviewpagertraining.models.HistoryDisappointedFragment;
 import markmomo.com.myamazingviewpagertraining.models.HistoryHappyFragment;
@@ -40,7 +38,7 @@ public class HistoryActivity extends AppCompatActivity implements HistoryNormalF
         mMoodHistory = intent.getIntegerArrayListExtra("moodHistoryArray");
 
         for (int i = 0; i < 7; i++){
-            MyDisplayFragmentOnPosition(mMoodHistory.get(i+1), i+1);
+            displayFragmentOnPosition(mMoodHistory.get(i+1), i+1);
         }
     }
 
@@ -53,13 +51,13 @@ public class HistoryActivity extends AppCompatActivity implements HistoryNormalF
 
     }
 
-    private void MyDisplayFragmentOnPosition(int currentMood, int position) {
+    private void displayFragmentOnPosition(int currentMood, int position) {
 
-        HistorySadFragment mHistorySadFragment;
-        HistoryDisappointedFragment mHistoryDisappointedFragment;
-        HistoryNormalFragment mHistoryNormalFragment;
-        HistoryHappyFragment mHistoryHappyFragment;
-        HistorySuperHappyFragment mHistorySuperHappyFragment;
+        HistorySadFragment historySadFragment;
+        HistoryDisappointedFragment historyDisappointedFragment;
+        HistoryNormalFragment historyNormalFragment;
+        HistoryHappyFragment historyHappyFragment;
+        HistorySuperHappyFragment historySuperHappyFragment;
         mDayPositionLayout = 0;
 
         switch (position) {
@@ -87,38 +85,38 @@ public class HistoryActivity extends AppCompatActivity implements HistoryNormalF
         }
         switch (currentMood) {
             case 0:
-                mHistorySadFragment = (HistorySadFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
-                if (mHistorySadFragment == null) {
-                    mHistorySadFragment = new HistorySadFragment();
-                    myDisplayFragment(mHistorySadFragment);
+                historySadFragment = (HistorySadFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
+                if (historySadFragment == null) {
+                    historySadFragment = new HistorySadFragment();
+                    myDisplayFragment(historySadFragment);
                 }
                 break;
             case 1:
-                mHistoryDisappointedFragment = (HistoryDisappointedFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
-                if (mHistoryDisappointedFragment == null) {
-                    mHistoryDisappointedFragment = new HistoryDisappointedFragment();
-                    myDisplayFragment(mHistoryDisappointedFragment);
+                historyDisappointedFragment = (HistoryDisappointedFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
+                if (historyDisappointedFragment == null) {
+                    historyDisappointedFragment = new HistoryDisappointedFragment();
+                    myDisplayFragment(historyDisappointedFragment);
                 }
                 break;
             case 2:
-                mHistoryNormalFragment = (HistoryNormalFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
-                if (mHistoryNormalFragment == null) {
-                    mHistoryNormalFragment = new HistoryNormalFragment();
-                    myDisplayFragment(mHistoryNormalFragment);
+                historyNormalFragment = (HistoryNormalFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
+                if (historyNormalFragment == null) {
+                    historyNormalFragment = new HistoryNormalFragment();
+                    myDisplayFragment(historyNormalFragment);
                 }
                 break;
             case 3:
-                mHistoryHappyFragment = (HistoryHappyFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
-                if (mHistoryHappyFragment == null) {
-                    mHistoryHappyFragment = new HistoryHappyFragment();
-                    myDisplayFragment(mHistoryHappyFragment);
+                historyHappyFragment = (HistoryHappyFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
+                if (historyHappyFragment == null) {
+                    historyHappyFragment = new HistoryHappyFragment();
+                    myDisplayFragment(historyHappyFragment);
                 }
                 break;
             case 4:
-                mHistorySuperHappyFragment = (HistorySuperHappyFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
-                if (mHistorySuperHappyFragment == null) {
-                    mHistorySuperHappyFragment = new HistorySuperHappyFragment();
-                    myDisplayFragment(mHistorySuperHappyFragment);
+                historySuperHappyFragment = (HistorySuperHappyFragment) getSupportFragmentManager().findFragmentById(mDayPositionLayout);
+                if (historySuperHappyFragment == null) {
+                    historySuperHappyFragment = new HistorySuperHappyFragment();
+                    myDisplayFragment(historySuperHappyFragment);
                     break;
                 }
         }
