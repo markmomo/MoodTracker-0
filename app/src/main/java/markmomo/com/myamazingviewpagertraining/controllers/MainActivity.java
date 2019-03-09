@@ -20,30 +20,26 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //PREFERENCES
-    private SharedPreferences mPreferences ;
-    public static final String [] PREF_MOOD_ARRAY = new String[]{"PREF_MOOD_ARRAY1","PREF_MOOD_ARRAY2","PREF_MOOD_ARRAY3","PREF_MOOD_ARRAY4",
-            "PREF_MOOD_ARRAY5","PREF_MOOD_ARRAY6","PREF_MOOD_ARRAY7","PREF_MOOD_ARRAY8"};
+    private SharedPreferences mPrefs ;
+    public static final String [] PREF_MOOD = new String[]{"PREF_MOOD1","PREF_MOOD2","PREF_MOOD3","PREF_MOOD4",
+            "PREF_MOOD5","PREF_MOOD6","PREF_MOOD7","PREF_MOOD8"};
 
-    public static final String PREF_LAST_TIME_DAY = "LAST_TIME_DAY";
-    public static final String PREF_LAST_TIME_MOOD_POSITION = "PREF_LAST_TIME_MOOD_POSITION";
-
-
-    private Handler mHandler;
+    public static final String PREF_LAST_QUIT_DAY = "PREF_LAST_QUIT_DAY";
+    public static final String PREF_LAST_QUIT_MOOD = "PREF_LAST_QUIT_MOOD";
 
     //HISTORY
-    private ArrayList<Integer> mDayTrackingArray;
-    private ArrayList<Integer> mMoodHistoryArray;
-    private int mCurrentMoodPosition;
+    private ArrayList<Integer> mDayTracking;
+    private ArrayList<Integer> mMoodHistory;
+    private int mCurrentMood;
     private int mLastTimeDay;
-    private int mLastTimePosition;
+    private int mLastTimeMood;
     //LAYOUTS
-    private ImageButton mNoteButtonIcon ;
-    private ImageButton mHistoryButtonIcon;
+    private ImageButton mNoteIcon ;
+    private ImageButton mHistoryIcon;
     private ViewPager mViewPager;
-    private EditText mEditTextBox;
-
+    private EditText mUserBox;
     //DATES
-    private int mCurrentMinute;
+    private int mCurrentMin;
     private int mCurrentDay;
     private int mCurrentYear;
     private int mCurrentMonth;
@@ -53,19 +49,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        int buttonIndex;
-        buttonIndex = (int)v.getTag();
+        int index;
+        index = (int)v.getTag();
 
-        if (buttonIndex == 1) {
-            this.displayNoteBox();
+        if (index == 1) {
+            this.displayUserBox();
         }
-        if (buttonIndex == 2){
+        if (index == 2){
             Intent intent = new Intent(MainActivity.this,HistoryActivity.class);
-            intent.putIntegerArrayListExtra("moodHistoryArray",mMoodHistoryArray);
+            intent.putIntegerArrayListExtra("moodHistory",mMoodHistory);
             startActivity(intent);
         }
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("onCreate!!!!!!!!!!!onCreate!!!!!!!!!!!!!onCreate!!");
@@ -73,44 +68,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         //LAYOUTS
-        mNoteButtonIcon = findViewById(R.id.activity_main_note_icon_button);
-        mHistoryButtonIcon = findViewById(R.id.activity_main_history_icon_button);
-        mEditTextBox = new EditText(this);
-        mViewPager = findViewById(R.id.activity_main_view_pager);
-        this.configureViewPager();
-
+        mNoteIcon = findViewById(R.id.act_main_note_icon);
+        mHistoryIcon = findViewById(R.id.act_main_history_icon);
+        mUserBox = new EditText(this);
+        mViewPager = findViewById(R.id.act_main_view_pager);
+        this.configViewPager();
         //LISTENERS
-        mNoteButtonIcon.setOnClickListener(this);
-        mHistoryButtonIcon.setOnClickListener(this);
-        mNoteButtonIcon.setTag(1);
-        mHistoryButtonIcon.setTag(2);
+        mNoteIcon.setOnClickListener(this);
+        mHistoryIcon.setOnClickListener(this);
+        mNoteIcon.setTag(1);
+        mHistoryIcon.setTag(2);
 
-        //LOADING PREFERENCES
-        mPreferences = getPreferences(MODE_PRIVATE);
-        initializeHistory();
+        //INITIALIZATION PREFERENCES
+        mPrefs = getPreferences(MODE_PRIVATE);
+        this.initGetPrefs();
 
         //ACTIONS
-
-        this.trackingHistory();
-
+        this.trackingData();
     }
 
-    private void configureViewPager(){
-
+    private void configViewPager(){
         PageAdapter pageAdapter;
         pageAdapter = new PageAdapter(getSupportFragmentManager(), getResources().getIntArray(R.array.colorPagesViewPager));
         mViewPager.setAdapter(pageAdapter);
 
-        mNoteButtonIcon.setBackgroundColor(pageAdapter.getMainIconsColor());
-        mHistoryButtonIcon.setBackgroundColor(pageAdapter.getMainIconsColor());
+        mNoteIcon.setBackgroundColor(pageAdapter.getMainIconsColor());
+        mHistoryIcon.setBackgroundColor(pageAdapter.getMainIconsColor());
     }
 
-    private void displayNoteBox(){
+    private void displayUserBox(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
         alert.setMessage("efface votre commentaire du jour");
         alert.setTitle("Commentaire");
-        alert.setView(mEditTextBox);
+        alert.setView(mUserBox);
 
         alert.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
@@ -118,61 +109,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
         alert.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                //mCommentText = mEditTextBox.getText().toString();
+                //mCommentText = mUserBox.getText().toString();
             }
         });
         alert.setCancelable(false);
         alert.create();
-        if(mEditTextBox.getParent() != null) {
-            ((ViewGroup)mEditTextBox.getParent()).removeView(mEditTextBox); // <- fix
+        if(mUserBox.getParent() != null) {
+            ((ViewGroup)mUserBox.getParent()).removeView(mUserBox); // <- fix
         }
         alert.show();
     }
 
-    private String getCurrentDate(){
-
-        return "Year : " + String.valueOf(Calendar.getInstance().get(Calendar.YEAR)) +" Month : "
-                + String.valueOf(Calendar.getInstance().get(Calendar.MONTH+1)) + " Day : "
-                + String.valueOf(Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) + " Hour : "
-                + String.valueOf(Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) + " Minute : "
-                +  String.valueOf(Calendar.getInstance().get(Calendar.MINUTE));
-    }
-
-    private void trackingHistory(){
-
-        mHandler = new Handler(getMainLooper());
-        mHandler.postDelayed(new Runnable() {
-
+    private void trackingData(){
+        final  Handler handler = new Handler(getMainLooper());
+        handler.postDelayed(new Runnable() {
 
             @Override
             public void run() {
+                mCurrentMood = mViewPager.getCurrentItem();
+                mDayTracking.add(testTime());
 
-
-                mCurrentMoodPosition = mViewPager.getCurrentItem();
-                mDayTrackingArray.add(testTime());
-
-                updateMoodHistory();
+                trackingMoods();
 
                 System.out.println("------------------------------------------------------------------------");
-                System.out.println(getCurrentDate());
-                System.out.println(mCurrentYear + "-" + mCurrentMonth + "-" + mCurrentDay + "-" + mCurrentHour + "-" + mCurrentMinute);
-                System.out.println(mCurrentDay+""+mCurrentMinute);
+                System.out.println(mCurrentYear + "-" + mCurrentMonth + "-" + mCurrentDay + "-" + mCurrentHour + "-" + mCurrentMin);
+                System.out.println("------------------------------------------------------------------------");
                 whenLastTime();
-                System.out.println("------------------------------------------------------------------------");
 
-                mHandler.postDelayed(this, 1000);
+                mLastTimeMood = mViewPager.getCurrentItem();
+                mLastTimeDay = testTime();
+                handler.postDelayed(this, 1000);
             }
         }, 10);
     }
 
-    private void updateMoodHistory(){
-        System.out.println("mDayTrackingArray = " + mDayTrackingArray);
+    private void trackingMoods(){
+        System.out.println("mDayTracking = " + mDayTracking);
 
-        while (mDayTrackingArray.size()!=1){
-            int lastItem = mDayTrackingArray.get(mDayTrackingArray.size()-1);
-            int beforeLastItem = mDayTrackingArray.get(mDayTrackingArray.size()-2);
+        while (mDayTracking.size()!=1){
+            int lastItem = mDayTracking.get(mDayTracking.size()-1);
+            int beforeLastItem = mDayTracking.get(mDayTracking.size()-2);
 
-            if (lastItem - beforeLastItem > 0  && !mDayTrackingArray.isEmpty()){
+            if (lastItem - beforeLastItem > 0  && !mDayTracking.isEmpty()){
                 int w = lastItem - beforeLastItem;
 
                 for (int i = 1;i<8;i++){
@@ -181,71 +159,84 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         while(w>1){
 
-                            mMoodHistoryArray.add(0, -1);
-                            mMoodHistoryArray.remove(mMoodHistoryArray.size() - 1);
+                            mMoodHistory.add(0, -1);
+                            mMoodHistory.remove(mMoodHistory.size() - 1);
                             w--;
                         }
-                        mMoodHistoryArray.add(0, mCurrentMoodPosition);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size() - 1);
+                        mMoodHistory.add(0, mCurrentMood);
+                        mMoodHistory.remove(mMoodHistory.size() - 1);
                     }
                 }
-                while (mDayTrackingArray.size() > 1){
+                while (mDayTracking.size() > 1){
 
-                    mDayTrackingArray.remove(0);
+                    mDayTracking.remove(0);
                 }
 
-            } else if (!mDayTrackingArray.isEmpty()) {
+            } else if (!mDayTracking.isEmpty()) {
 
-                mDayTrackingArray.remove(0);
+                mDayTracking.remove(0);
             }
         }
-        System.out.println("mDayTrackingArray = " + mDayTrackingArray);
-        System.out.println("mMoodHistoryArray = " + mMoodHistoryArray);
+        System.out.println("mDayTracking = " + mDayTracking);
+        System.out.println("mLastTimeDay = " + mLastTimeDay);
+        System.out.println("mMoodHistory = " + mMoodHistory);
     }
 
-    private void saveHistory(){
+    private void initGetPrefs(){
+        //INIT
         ArrayList<Integer> Day = new ArrayList<>();
+        mMoodHistory = new ArrayList<>();
+        mDayTracking = new ArrayList<>();
 
-        mMoodHistoryArray.remove(0);
-        mMoodHistoryArray.add(0,mViewPager.getCurrentItem());
-        for (int i = 0;i<8;i++){
-            Day.add(mMoodHistoryArray.get(i));
-            mPreferences.edit().putInt(PREF_MOOD_ARRAY[i],Day.get(i)).apply();
-        }
-        mLastTimePosition = mViewPager.getCurrentItem();
-        mPreferences.edit().putInt(PREF_LAST_TIME_MOOD_POSITION,mLastTimePosition).apply();
-        mLastTimeDay = testTime();
-        mPreferences.edit().putInt(PREF_LAST_TIME_DAY,mLastTimeDay).apply();
-    }
+        //GET PREFS
+        mLastTimeMood = mPrefs.getInt(PREF_LAST_QUIT_MOOD,2);
+        mLastTimeDay = mPrefs.getInt(PREF_LAST_QUIT_DAY,testTime());
 
-    private void initializeHistory(){
-        mLastTimePosition = mPreferences.getInt(PREF_LAST_TIME_MOOD_POSITION,2);
-        mLastTimeDay = mPreferences.getInt(PREF_LAST_TIME_DAY,testTime());
-        mMoodHistoryArray = new ArrayList<>();
-        mDayTrackingArray = new ArrayList<>();
-        ArrayList<Integer> Day = new ArrayList<>();
 
         if(mLastTimeDay == testTime()){
-            mViewPager.setCurrentItem(mLastTimePosition);
+            mViewPager.setCurrentItem(mLastTimeMood);
+            for (int i = 0;i<8;i++){
+                Day.add(mPrefs.getInt(PREF_MOOD[i],-2));
+                mMoodHistory.add(Day.get(i));
+            }
         } else if (testTime()-mLastTimeDay > 7){
-            mMoodHistoryArray.clear();
+            mMoodHistory.clear();
             mViewPager.setCurrentItem(3);
             for (int i = 0;i<8;i++){
-                mMoodHistoryArray.add(i,-2);
+                mMoodHistory.add(i,-2);
             }
         } else {
             for (int i = 0;i<8;i++){
-                Day.add(mPreferences.getInt(PREF_MOOD_ARRAY[i],-2));
-                mMoodHistoryArray.add(Day.get(i));
+                Day.add(mPrefs.getInt(PREF_MOOD[i],-2));
+                mMoodHistory.add(Day.get(i));
             }
-            mDayTrackingArray.add(mLastTimeDay);
+            mDayTracking.add(mLastTimeDay);
             mViewPager.setCurrentItem(3);
         }
 
 
-        System.out.println("initialization mMoodHistoryArray = " + mMoodHistoryArray);
-        System.out.println("initialization mLastTimeDay = " + mLastTimeDay);
-        System.out.println("initialization mDayTrackingArray = " + mDayTrackingArray);
+        System.out.println("initialization mMoodHistory = " + mMoodHistory);
+        System.out.println("init prefs mLastTimeMood = " + mLastTimeMood);
+        System.out.println("init prefs mLastTimeDay = " + mLastTimeDay);
+        System.out.println("initialization testTime = " + testTime());
+        System.out.println("initialization mDayTracking = " + mDayTracking);
+    }
+
+    private void putPrefs(){
+        ArrayList<Integer> Day = new ArrayList<>();
+        //SAVE STATE
+        mLastTimeMood = mViewPager.getCurrentItem();
+        mLastTimeDay = testTime();
+        mMoodHistory.remove(0);
+        mMoodHistory.add(0,mLastTimeMood);
+
+        //PUT PREFS
+        for (int i = 0;i<8;i++){
+            Day.add(mMoodHistory.get(i));
+            mPrefs.edit().putInt(PREF_MOOD[i],Day.get(i)).apply();
+        }
+        mPrefs.edit().putInt(PREF_LAST_QUIT_MOOD,mLastTimeMood).apply();
+        mPrefs.edit().putInt(PREF_LAST_QUIT_DAY,mLastTimeDay).apply();
     }
 
     public int testTime(){
@@ -253,25 +244,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mCurrentMonth = Calendar.getInstance().get(Calendar.MONTH)+1;
         mCurrentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
         mCurrentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
-        mCurrentMinute = Calendar.getInstance().get(Calendar.MINUTE);
+        mCurrentMin = Calendar.getInstance().get(Calendar.MINUTE);
         mCurrentSecond = Calendar.getInstance().get(Calendar.SECOND);
-        return mCurrentSecond;
-    }
-    public int day(){
-        return  Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
-    }
-    public int month(){
-        return Calendar.getInstance().get(Calendar.MONTH)+1;
-    }
-    public int year(){
-        return Calendar.getInstance().get(Calendar.YEAR);
-    }
-    public int hour(){
-        return Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        return mCurrentMin;
     }
 
     private void whenLastTime() {
-        int when = mCurrentMinute - mLastTimeDay;
+        int when = mCurrentMin - mLastTimeDay;
 
         if (when > 0)System.out.println("Last connexion " + when + " days ago");
         else System.out.println("Last connexion today!!!");
@@ -298,9 +277,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStop() {
         super.onStop();
-        saveHistory();
-        //mPreferences.edit().clear().apply();
+        putPrefs();
+        //mPrefs.edit().clear().apply();
         System.out.println("onStop!!!!!!!!!!!onStop!!!!!!!!!!!!!onStop!!");
+        System.out.println("mLastTimeDay = " + mLastTimeDay);
     }
 
     @Override

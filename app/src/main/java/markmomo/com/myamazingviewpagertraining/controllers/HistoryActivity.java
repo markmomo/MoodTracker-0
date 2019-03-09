@@ -35,7 +35,7 @@ public class HistoryActivity extends AppCompatActivity implements HistoryNormalF
 
         Intent intent = getIntent();
 
-        mMoodHistory = intent.getIntegerArrayListExtra("moodHistoryArray");
+        mMoodHistory = intent.getIntegerArrayListExtra("moodHistory");
 
         for (int i = 0; i < 7; i++){
             displayFragmentOnPosition(mMoodHistory.get(i+1), i+1);
