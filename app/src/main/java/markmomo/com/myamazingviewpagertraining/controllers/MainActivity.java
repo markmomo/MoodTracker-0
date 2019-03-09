@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -14,8 +15,11 @@ import android.widget.ImageButton;
 import markmomo.com.myamazingviewpagertraining.adapters.PageAdapter;
 import markmomo.com.myamazingviewpagertraining.R;
 import android.os.Handler;
+
+
 import java.util.ArrayList;
 import java.util.Calendar;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -30,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //HISTORY
     private ArrayList<Integer> mDayTracking;
     private ArrayList<Integer> mMoodHistory;
+    ArrayList<String> mUserNotesHistory;
+
     private int mCurrentMood;
     private int mLastTimeDay;
     private int mLastTimeMood;
@@ -105,11 +111,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         alert.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
+                mUserBox.setText("");
             }
         });
         alert.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                //mCommentText = mUserBox.getText().toString();
+                trackingNotes();
+                mUserBox.setText("");
             }
         });
         alert.setCancelable(false);
@@ -137,8 +145,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 whenLastTime();
 
                 mLastTimeMood = mViewPager.getCurrentItem();
-                mLastTimeDay = testTime();
-                handler.postDelayed(this, 1000);
+
+                handler.postDelayed(this, 60000);
             }
         }, 10);
     }
@@ -182,11 +190,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         System.out.println("mMoodHistory = " + mMoodHistory);
     }
 
+    private void trackingNotes() {
+        Log.e("trackingNotes","BEFORE BEFORE BEFORE BEFORE BEFORE");
+        Log.e("trackingNotes","mLastTimeDay " +mLastTimeDay) ;
+        Log.e("trackingNotes","testTime() " +testTime()) ;
+        Log.e("trackingNotes","mUserNotesHistory " + mUserNotesHistory);
+        Log.e("trackingNotes","____________________________________");
+        //initializing an ArrayList
+        if (mUserNotesHistory.isEmpty()){
+            for (int i=0;i<=7;i++){
+                mUserNotesHistory.add(i,"default");
+            }
+        }//managing missing days
+        if (testTime() -  mLastTimeDay > 0){
+            //adding missing days information
+            for (int i = 1; i < testTime() -  mLastTimeDay;i++){
+                mUserNotesHistory.add(0,"no notes today");
+            }//adding one entry
+            mUserNotesHistory.add(0,mUserBox.getText().toString());
+            mLastTimeDay = testTime();
+        //replacing today entry by a new one
+        }else {
+            mUserNotesHistory.remove(0);
+            mUserNotesHistory.add(0,mUserBox.getText().toString());
+        }
+        mLastTimeDay = testTime();
+        Log.e("trackingNotes","AFTER AFTER AFTER AFTER AFTER");
+        Log.e("trackingNotes","mLastTimeDay " +mLastTimeDay) ;
+        Log.e("trackingNotes","testTime() " +testTime()) ;
+        Log.e("trackingNotes","mUserNotesHistory " + mUserNotesHistory);
+        Log.e("trackingNotes","____________________________________");
+
+
+
+
+    }
     private void initGetPrefs(){
         //INIT
         ArrayList<Integer> Day = new ArrayList<>();
+        mUserNotesHistory = new ArrayList<>();
         mMoodHistory = new ArrayList<>();
         mDayTracking = new ArrayList<>();
+
 
         //GET PREFS
         mLastTimeMood = mPrefs.getInt(PREF_LAST_QUIT_MOOD,2);
@@ -248,6 +293,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mCurrentSecond = Calendar.getInstance().get(Calendar.SECOND);
         return mCurrentMin;
     }
+    private void print (String method, String message, int value){
+        System.out.println("--------------------------------------------------------------------");
+        System.out.println(method +" "+ message +" "+value );
+        System.out.println("--------------------------------------------------------------------");
+    }
 
     private void whenLastTime() {
         int when = mCurrentMin - mLastTimeDay;
@@ -266,6 +316,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onPause() {
         super.onPause();
         System.out.println("onPause!!!!!!!!!!!onPause!!!!!!!!!!!!!onPause!!");
+
     }
 
     @Override
