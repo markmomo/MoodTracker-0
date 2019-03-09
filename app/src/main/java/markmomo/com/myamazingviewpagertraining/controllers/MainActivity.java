@@ -25,12 +25,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             "PREF_MOOD_ARRAY5","PREF_MOOD_ARRAY6","PREF_MOOD_ARRAY7","PREF_MOOD_ARRAY8"};
 
     public static final String PREF_LAST_TIME_DAY = "LAST_TIME_DAY";
+    public static final String PREF_LAST_TIME_MOOD_POSITION = "PREF_LAST_TIME_MOOD_POSITION";
 
     //HISTORY
     private ArrayList<Integer> mDayTrackingArray;
     private ArrayList<Integer> mMoodHistoryArray;
     private int mCurrentMoodPosition;
-
+    private int mLastTimeDay;
+    private int mLastTimePosition;
     //LAYOUTS
     private ImageButton mNoteButtonIcon ;
     private ImageButton mHistoryButtonIcon;
@@ -38,9 +40,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText mEditTextBox;
 
     //DATES
-    private int mLastTimeDay;
     private int mCurrentMinute;
     private int mCurrentDay;
+    private int mCurrentYear = year();
+    private int mCurrentMonth = month();
+    private int mCurrentHour = hour();
 
 
     @Override
@@ -60,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("onCreate!!!!!!!!!!!onCreate!!!!!!!!!!!!!onCreate!!");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -68,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mHistoryButtonIcon = findViewById(R.id.activity_main_history_icon_button);
         mEditTextBox = new EditText(this);
         mViewPager = findViewById(R.id.activity_main_view_pager);
+        this.configureViewPager();
 
         //LISTENERS
         mNoteButtonIcon.setOnClickListener(this);
@@ -80,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initializeHistory();
 
         //ACTIONS
-        this.configureViewPager();
+
         this.trackingHistory();
 
     }
@@ -90,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         PageAdapter pageAdapter;
         pageAdapter = new PageAdapter(getSupportFragmentManager(), getResources().getIntArray(R.array.colorPagesViewPager));
         mViewPager.setAdapter(pageAdapter);
-        mViewPager.setCurrentItem(3);
 
         mNoteButtonIcon.setBackgroundColor(pageAdapter.getMainIconsColor());
         mHistoryButtonIcon.setBackgroundColor(pageAdapter.getMainIconsColor());
@@ -134,9 +139,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final Handler handler = new Handler(getMainLooper());
         handler.postDelayed(new Runnable() {
 
+
             @Override
             public void run() {
-
+                mCurrentYear = year();
+                mCurrentMonth = month();
+                mCurrentHour = hour();
                 mCurrentDay = day();
                 mCurrentMinute = minute();
                 mCurrentMoodPosition = mViewPager.getCurrentItem();
@@ -146,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 System.out.println("------------------------------------------------------------------------");
                 System.out.println(getCurrentDate());
+                System.out.println(mCurrentYear + "-" + mCurrentMonth + "-" + mCurrentDay + "-" + mCurrentHour + "-" + mCurrentMinute);
                 System.out.println(mCurrentDay+""+mCurrentMinute);
                 whenLastTime();
                 System.out.println("------------------------------------------------------------------------");
@@ -156,73 +165,94 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void updateMoodHistory(){
+        System.out.println("mDayTrackingArray = " + mDayTrackingArray);
+        int lastItem = mDayTrackingArray.get(mDayTrackingArray.size()-1);
+        int beforeLastItem = mDayTrackingArray.get(mDayTrackingArray.size()-2);
 
         while (mDayTrackingArray.size()!=1){
 
-            if (mDayTrackingArray.get(mDayTrackingArray.size()-1) - mDayTrackingArray.get(mDayTrackingArray.size()-2) > 0  && !mDayTrackingArray.isEmpty()){
+            if (lastItem - beforeLastItem > 0  && !mDayTrackingArray.isEmpty()){
+                int w = lastItem - beforeLastItem;
+                for(int i = 1;i<8;i++){
 
-                switch (mDayTrackingArray.get(mDayTrackingArray.size()-1) - mDayTrackingArray.get(mDayTrackingArray.size()-2)){
-                    case 1 :
-                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        break;
-                    case 2 :
-                        mMoodHistoryArray.add(0,-1);
-                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        break;
-                    case 3 :
-                        for(int i = 0; i < 2; i ++){
-                            mMoodHistoryArray.add(0,-1);
+                    System.out.println("for");
+                    if (lastItem - beforeLastItem == i){
+
+                        while(w>1){
+                            System.out.println("while");
+                            mMoodHistoryArray.add(0, -1);
+                            mMoodHistoryArray.remove(mMoodHistoryArray.size() - 1);
+                            w--;
                         }
-                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                        for(int i = 0; i < 3; i ++){
-                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        }
-                        break;
-                    case 4 :
-                        for(int i = 0; i < 3; i ++){
-                            mMoodHistoryArray.add(0,-1);
-                        }
-                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                        for(int i = 0; i < 4; i ++){
-                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        }
-                        break;
-                    case 5 :
-                        for(int i = 0; i < 4; i ++){
-                            mMoodHistoryArray.add(0,-1);
-                        }
-                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                        for(int i = 0; i < 5; i ++){
-                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        }
-                        break;
-                    case 6 :
-                        for(int i = 0; i < 5; i ++){
-                            mMoodHistoryArray.add(0,-1);
-                        }
-                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                        for(int i = 0; i < 6; i ++){
-                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        }
-                        break;
-                    case 7 :
-                        for(int i = 0; i < 6; i ++){
-                            mMoodHistoryArray.add(0,-1);
-                        }
-                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
-                        for(int i = 0; i < 7; i ++){
-                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
-                        }
-                        break;
+                        mMoodHistoryArray.add(0, mCurrentMoodPosition);
+                        mMoodHistoryArray.remove(mMoodHistoryArray.size() - 1);
+                    } else{
+                        System.out.println("même jour");
                     }
+                }
+                System.out.println("mMoodHistory après "+ mMoodHistoryArray);
+//                switch (lastItem - beforeLastItem){
+//                    case 1 :
+//                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+//                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+//                        break;
+//                    case 2 :
+//                        mMoodHistoryArray.add(0,-1);
+//                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+//                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+//                        mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+//                        break;
+//                    case 3 :
+//                        for(int i = 0; i < 2; i ++){
+//                            mMoodHistoryArray.add(0,-1);
+//                        }
+//                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+//                        for(int i = 0; i < 3; i ++){
+//                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+//                        }
+//                        break;
+//                    case 4 :
+//                        for(int i = 0; i < 3; i ++){
+//                            mMoodHistoryArray.add(0,-1);
+//                        }
+//                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+//                        for(int i = 0; i < 4; i ++){
+//                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+//                        }
+//                        break;
+//                    case 5 :
+//                        for(int i = 0; i < 4; i ++){
+//                            mMoodHistoryArray.add(0,-1);
+//                        }
+//                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+//                        for(int i = 0; i < 5; i ++){
+//                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+//                        }
+//                        break;
+//                    case 6 :
+//                        for(int i = 0; i < 5; i ++){
+//                            mMoodHistoryArray.add(0,-1);
+//                        }
+//                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+//                        for(int i = 0; i < 6; i ++){
+//                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+//                        }
+//                        break;
+//                    case 7 :
+//                        for(int i = 0; i < 6; i ++){
+//                            mMoodHistoryArray.add(0,-1);
+//                        }
+//                        mMoodHistoryArray.add(0,mCurrentMoodPosition);
+//                        for(int i = 0; i < 7; i ++){
+//                            mMoodHistoryArray.remove(mMoodHistoryArray.size()-1);
+//                        }
+//                        break;
+//                    }
 
                 while (mDayTrackingArray.size() > 1){
 
                     mDayTrackingArray.remove(0);
-                    System.out.println("mDayTrackingArray cleared except one item");
+                    System.out.println("mDayTrackingArray cleared except last item");
                 }
 
             } else if (!mDayTrackingArray.isEmpty()) {
@@ -236,27 +266,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void saveHistory(){
-        int []Day = new int[]{mMoodHistoryArray.get(0),mMoodHistoryArray.get(1),mMoodHistoryArray.get(2),mMoodHistoryArray.get(3),
-                mMoodHistoryArray.get(4),mMoodHistoryArray.get(5),mMoodHistoryArray.get(6),mMoodHistoryArray.get(7)};
+        ArrayList<Integer> Day = new ArrayList<>();
 
+        mMoodHistoryArray.remove(0);
+        mMoodHistoryArray.add(0,mViewPager.getCurrentItem());
         for (int i = 0;i<8;i++){
-            mPreferences.edit().putInt(PREF_MOOD_ARRAY[i],Day[i]).apply();
+            Day.add(mMoodHistoryArray.get(i));
+            mPreferences.edit().putInt(PREF_MOOD_ARRAY[i],Day.get(i)).apply();
         }
+        mLastTimePosition = mViewPager.getCurrentItem();
+        mPreferences.edit().putInt(PREF_LAST_TIME_MOOD_POSITION,mLastTimePosition).apply();
         mLastTimeDay = minute();
         mPreferences.edit().putInt(PREF_LAST_TIME_DAY,mLastTimeDay).apply();
     }
 
     private void initializeHistory(){
+        mLastTimePosition = mPreferences.getInt(PREF_LAST_TIME_MOOD_POSITION,2);
         mLastTimeDay = mPreferences.getInt(PREF_LAST_TIME_DAY,minute());
         mMoodHistoryArray = new ArrayList<>();
         mDayTrackingArray = new ArrayList<>();
+        ArrayList<Integer> Day = new ArrayList<>();
+
+        if(mLastTimeDay == minute()){
+            mViewPager.setCurrentItem(mLastTimePosition);
+        } else {
+            mViewPager.setCurrentItem(3);
+        }
 
         for (int i = 0;i<8;i++){
-            int []Day = new int[]{  mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),
-                                    mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),
-                                    mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),
-                                    mPreferences.getInt(PREF_MOOD_ARRAY[i], -1),mPreferences.getInt(PREF_MOOD_ARRAY[i], -1)};
-            mMoodHistoryArray.add(Day[i]);
+            Day.add(mPreferences.getInt(PREF_MOOD_ARRAY[i],-2));
+            mMoodHistoryArray.add(Day.get(i));
         }
         mDayTrackingArray.add(mLastTimeDay);
 
@@ -272,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return  Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
     }
     public int month(){
-        return Calendar.getInstance().get(Calendar.MONTH+1);
+        return Calendar.getInstance().get(Calendar.MONTH)+1;
     }
     public int year(){
         return Calendar.getInstance().get(Calendar.YEAR);
