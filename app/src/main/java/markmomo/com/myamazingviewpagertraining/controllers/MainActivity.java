@@ -15,8 +15,6 @@ import android.widget.ImageButton;
 import markmomo.com.myamazingviewpagertraining.adapters.PageAdapter;
 import markmomo.com.myamazingviewpagertraining.R;
 import android.os.Handler;
-
-
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -31,29 +29,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String [] PREF_NOTES = new String[] {"PREF_NOTES1","PREF_NOTES2","PREF_NOTES3","PREF_NOTES4",
             "PREF_NOTES5","PREF_NOTES6","PREF_NOTES7","PREF_NOTES8"};
 
-    public static final String PREF_LAST_QUIT_DAY = "PREF_LAST_QUIT_DAY";
+    public static final String PREF_LAST_QUIT_MOOD_DAY = "PREF_LAST_QUIT_DAY";
     public static final String PREF_LAST_QUIT_MOOD = "PREF_LAST_QUIT_MOOD";
+    public static final String PREF_LAST_QUIT_NOTE_DAY = "PREF_LAST_QUIT_NOTE";
+
+
 
     //HISTORY
-    private ArrayList<Integer> mDayTracking;
     private ArrayList<Integer> mMoodHistory;
-    ArrayList<String> mUserNotesHistory;
+    private int mDayOfLastMood;
+    private int mLastMood;
 
-    private int mCurrentMood;
-    private int mLastTimeDay;
-    private int mLastTimeMood;
+    private ArrayList<String> mUserNotesHistory;
+    private int mDayOfLastNote;
+
+
     //LAYOUTS
     private ImageButton mNoteIcon ;
     private ImageButton mHistoryIcon;
     private ViewPager mViewPager;
     private EditText mUserBox;
-    //DATES
-    private int mCurrentMin;
-    private int mCurrentDay;
-    private int mCurrentYear;
-    private int mCurrentMonth;
-    private int mCurrentHour;
-    private int mCurrentSecond;
 
 
     @Override
@@ -90,11 +85,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //INITIALIZATION PREFERENCES
         mPrefs = getPreferences(MODE_PRIVATE);
-        this.initGetPrefs();
-        this.initNotesPrefs();
+        this.getMoodsPrefs();
+        this.getNotesPrefs();
 
         //ACTIONS
-        this.trackingData();
+        this.updatingData();
     }
 
     private void configViewPager(){
@@ -113,15 +108,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         alert.setTitle("Commentaire");
         alert.setView(mUserBox);
 
+
         alert.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                mUserBox.setText("");
+
             }
         });
         alert.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                trackingNotes();
-                mUserBox.setText("");
+                trackingNotesFromPrefs();
+                mDayOfLastNote = testTime();
             }
         });
         alert.setCancelable(false);
@@ -132,197 +128,160 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         alert.show();
     }
 
-    private void trackingData(){
+    private void updatingData(){
         final  Handler handler = new Handler(getMainLooper());
         handler.postDelayed(new Runnable() {
 
             @Override
             public void run() {
-                mCurrentMood = mViewPager.getCurrentItem();
-                mDayTracking.add(testTime());
 
-                trackingMoods();
+                trackingMoodsFromPrefs();
 
-                System.out.println("------------------------------------------------------------------------");
-                System.out.println(mCurrentYear + "-" + mCurrentMonth + "-" + mCurrentDay + "-" + mCurrentHour + "-" + mCurrentMin);
-                System.out.println("------------------------------------------------------------------------");
-                whenLastTime();
+                mLastMood = mViewPager.getCurrentItem();
+                mDayOfLastMood = testTime();
 
-                mLastTimeMood = mViewPager.getCurrentItem();
-
-                handler.postDelayed(this, 60000);
+                handler.postDelayed(this, 10000);
             }
         }, 10);
     }
 
-    private void trackingMoods(){
-        System.out.println("mDayTracking = " + mDayTracking);
+    private void trackingMoodsFromPrefs(){
+        Log.e("trackingMoodsFromPrefs","BEFORE BEFORE BEFORE BEFORE BEFORE");
+        Log.e("trackingMoodsFromPrefs","mDayOfLastMood() " +mDayOfLastMood) ;
+        Log.e("trackingMoodsFromPrefs","mMoodHistory " + mMoodHistory);
+        Log.e("trackingMoodsFromPrefs","____________________________________");
 
-        while (mDayTracking.size()!=1){
-            int lastItem = mDayTracking.get(mDayTracking.size()-1);
-            int beforeLastItem = mDayTracking.get(mDayTracking.size()-2);
-
-            if (lastItem - beforeLastItem > 0  && !mDayTracking.isEmpty()){
-                int w = lastItem - beforeLastItem;
-
-                for (int i = 1;i<8;i++){
-
-                    if (lastItem - beforeLastItem == i){
-
-                        while(w>1){
-
-                            mMoodHistory.add(0, -1);
-                            mMoodHistory.remove(mMoodHistory.size() - 1);
-                            w--;
-                        }
-                        mMoodHistory.add(0, mCurrentMood);
-                        mMoodHistory.remove(mMoodHistory.size() - 1);
-                    }
-                }
-                while (mDayTracking.size() > 1){
-
-                    mDayTracking.remove(0);
-                }
-
-            } else if (!mDayTracking.isEmpty()) {
-
-                mDayTracking.remove(0);
+        //cleaning mMoodHistory if more than 8 items
+        while (mMoodHistory.size()>8){
+            mMoodHistory.remove(mMoodHistory.size()-1);
+        }//checking if we are today or not
+        if ((testTime() -  mDayOfLastMood > 0)){
+            //adding missing days information
+            for (int i = 1; i < (testTime() -  mDayOfLastMood);i++){
+                mMoodHistory.add(0, -1);
             }
+            mMoodHistory.add(0, mViewPager.getCurrentItem());
+            //replacing today entry by a new one
+        }else {
+            mMoodHistory.remove(0);
+            mMoodHistory.add(0, mViewPager.getCurrentItem());
         }
-        System.out.println("mDayTracking = " + mDayTracking);
-        System.out.println("mLastTimeDay = " + mLastTimeDay);
-        System.out.println("mMoodHistory = " + mMoodHistory);
-    }
 
-    private void trackingNotes() {
-        Log.e("trackingNotes","BEFORE BEFORE BEFORE BEFORE BEFORE");
-        Log.e("trackingNotes","mLastTimeDay " +mLastTimeDay) ;
-        Log.e("trackingNotes","testTime() " +testTime()) ;
-        Log.e("trackingNotes","mUserNotesHistory " + mUserNotesHistory);
-        Log.e("trackingNotes","____________________________________");
-        //initializing an ArrayList
+
+        Log.e("trackingMoodsFromPrefs","AFTER AFTER AFTER AFTER AFTER");
+        Log.e("trackingMoodsFromPrefs","mDayOfLastMood() " +mDayOfLastMood) ;
+        Log.e("trackingMoodsFromPrefs","mMoodHistory " + mMoodHistory);
+        Log.e("trackingMoodsFromPrefs","____________________________________");
+    }
+    private void trackingNotesFromPrefs() {
+        Log.e("trackingNotesFromPrefs","BEFORE BEFORE BEFORE BEFORE BEFORE");
+        Log.e("trackingNotesFromPrefs","mDayOfLastMood " +mDayOfLastMood) ;
+        Log.e("trackingNotesFromPrefs","testTime() " +testTime()) ;
+        Log.e("trackingNotesFromPrefs","mUserNotesHistory " + mUserNotesHistory);
+        Log.e("trackingNotesFromPrefs","____________________________________");
+
+
+        //cleaning mUserNotesHistory if more than 8 items
+        while (mUserNotesHistory.size()>8){
+            mUserNotesHistory.remove(mUserNotesHistory.get(mUserNotesHistory.size()-1));
+        }
+        //initializing an ArrayList containing 8 items
         if (mUserNotesHistory.isEmpty()){
             for (int i=0;i<=7;i++){
                 mUserNotesHistory.add(i,"default");
             }
-        }//managing missing days
-        if (testTime() -  mLastTimeDay > 0){
+        }//managing missing days information
+        if (testTime() -  mDayOfLastNote > 0){
             //adding missing days information
-            for (int i = 1; i < testTime() -  mLastTimeDay;i++){
-                mUserNotesHistory.add(0,"no notes today");
-            }//adding one entry
+            for (int i = 1; i < testTime() -  mDayOfLastNote;i++){
+                mUserNotesHistory.add(0,"no note");
+            }
             mUserNotesHistory.add(0,mUserBox.getText().toString());
-            mLastTimeDay = testTime();
         //replacing today entry by a new one
         }else {
             mUserNotesHistory.remove(0);
             mUserNotesHistory.add(0,mUserBox.getText().toString());
         }
-        mLastTimeDay = testTime();
+
         Log.e("trackingNotes","AFTER AFTER AFTER AFTER AFTER");
-        Log.e("trackingNotes","mLastTimeDay " +mLastTimeDay) ;
+        Log.e("trackingNotes","mDayOfLastNote " +mDayOfLastNote) ;
         Log.e("trackingNotes","testTime() " +testTime()) ;
         Log.e("trackingNotes","mUserNotesHistory " + mUserNotesHistory);
         Log.e("trackingNotes","____________________________________");
-
     }
 
-    private void putNotesOnPrefs (){
+    private void putNotesPrefs (){
         ArrayList<String> Day = new ArrayList<>();
         for (int i = 0;i<8;i++){
             Day.add(mUserNotesHistory.get(i));
             mPrefs.edit().putString(PREF_NOTES[i],Day.get(i)).apply();
         }
+        mPrefs.edit().putInt(PREF_LAST_QUIT_NOTE_DAY,mDayOfLastNote).apply();
     }
 
-    private void initNotesPrefs (){
+    private void getNotesPrefs (){
+        mDayOfLastNote = testTime();
+
         ArrayList<String> index = new ArrayList<>();
         mUserNotesHistory = new ArrayList<>();
         for (int i = 0;i<8;i++){
             index.add(mPrefs.getString(PREF_NOTES[i],"default"));
             mUserNotesHistory.add(index.get(i));
         }
+        mDayOfLastNote = mPrefs.getInt(PREF_LAST_QUIT_NOTE_DAY,testTime());
     }
-
-
-    private void initGetPrefs(){
-        //INIT
+    private void getMoodsPrefs(){
+        Log.e("initGetPrefs","BEFORE BEFORE BEFORE BEFORE BEFORE");
+        Log.e("initGetPrefs","mLastMood " +mLastMood) ;
+        Log.e("initGetPrefs","mDayOfLastMood() " +mDayOfLastMood) ;
+        Log.e("initGetPrefs","____________________________________");
+        //VARIABLES INIT
         ArrayList<Integer> index = new ArrayList<>();
         mMoodHistory = new ArrayList<>();
-        mDayTracking = new ArrayList<>();
-
 
         //GET PREFS
-        mLastTimeMood = mPrefs.getInt(PREF_LAST_QUIT_MOOD,2);
-        mLastTimeDay = mPrefs.getInt(PREF_LAST_QUIT_DAY,testTime());
+        mLastMood = mPrefs.getInt(PREF_LAST_QUIT_MOOD,2);
+        mDayOfLastMood = mPrefs.getInt(PREF_LAST_QUIT_MOOD_DAY,testTime());
 
-
-        if(mLastTimeDay == testTime()){
-            mViewPager.setCurrentItem(mLastTimeMood);
-            for (int i = 0;i<8;i++){
-                index.add(mPrefs.getInt(PREF_MOOD[i],-2));
-                mMoodHistory.add(index.get(i));
-            }
-        } else if (testTime()-mLastTimeDay > 7){
-            mMoodHistory.clear();
-            mViewPager.setCurrentItem(3);
-            for (int i = 0;i<8;i++){
-                mMoodHistory.add(i,-2);
-            }
-        } else {
-            for (int i = 0;i<8;i++){
-                index.add(mPrefs.getInt(PREF_MOOD[i],-2));
-                mMoodHistory.add(index.get(i));
-            }
-            mDayTracking.add(mLastTimeDay);
-            mViewPager.setCurrentItem(3);
+        for (int i = 0;i<8;i++){
+            index.add(mPrefs.getInt(PREF_MOOD[i],-2));
+            mMoodHistory.add(index.get(i));
         }
+        //recovering view
+        if(mDayOfLastMood == testTime())mViewPager.setCurrentItem(mLastMood);
+        else mViewPager.setCurrentItem(3);
 
-
-        System.out.println("initialization mMoodHistory = " + mMoodHistory);
-        System.out.println("init prefs mLastTimeMood = " + mLastTimeMood);
-        System.out.println("init prefs mLastTimeDay = " + mLastTimeDay);
-        System.out.println("initialization testTime = " + testTime());
-        System.out.println("initialization mDayTracking = " + mDayTracking);
+        Log.e("initGetPrefs","AFTER AFTER AFTER AFTER AFTER");
+        Log.e("initGetPrefs","mLastMood " +mLastMood) ;
+        Log.e("initGetPrefs","mDayOfLastMood() " +mDayOfLastMood) ;
+        Log.e("initGetPrefs","____________________________________");
     }
 
-    private void putPrefs(){
+    private void putMoodPrefs(){
         ArrayList<Integer> Day = new ArrayList<>();
         //SAVE STATE
-        mLastTimeMood = mViewPager.getCurrentItem();
-        mLastTimeDay = testTime();
+        mLastMood = mViewPager.getCurrentItem();
+        mDayOfLastMood = testTime();
         mMoodHistory.remove(0);
-        mMoodHistory.add(0,mLastTimeMood);
+        mMoodHistory.add(0,mLastMood);
 
         //PUT PREFS
         for (int i = 0;i<8;i++){
             Day.add(mMoodHistory.get(i));
             mPrefs.edit().putInt(PREF_MOOD[i],Day.get(i)).apply();
         }
-        mPrefs.edit().putInt(PREF_LAST_QUIT_MOOD,mLastTimeMood).apply();
-        mPrefs.edit().putInt(PREF_LAST_QUIT_DAY,mLastTimeDay).apply();
+        mPrefs.edit().putInt(PREF_LAST_QUIT_MOOD,mLastMood).apply();
+        mPrefs.edit().putInt(PREF_LAST_QUIT_MOOD_DAY,mDayOfLastMood).apply();
     }
 
     public int testTime(){
-        mCurrentYear = Calendar.getInstance().get(Calendar.YEAR);
-        mCurrentMonth = Calendar.getInstance().get(Calendar.MONTH)+1;
-        mCurrentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        mCurrentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
-        mCurrentMin = Calendar.getInstance().get(Calendar.MINUTE);
-        mCurrentSecond = Calendar.getInstance().get(Calendar.SECOND);
-        return mCurrentMin;
-    }
-    private void print (String method, String message, int value){
-        System.out.println("--------------------------------------------------------------------");
-        System.out.println(method +" "+ message +" "+value );
-        System.out.println("--------------------------------------------------------------------");
-    }
-
-    private void whenLastTime() {
-        int when = mCurrentMin - mLastTimeDay;
-
-        if (when > 0)System.out.println("Last connexion " + when + " days ago");
-        else System.out.println("Last connexion today!!!");
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        int currentMonth = Calendar.getInstance().get(Calendar.MONTH)+1;
+        int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        int currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+        int currentMin = Calendar.getInstance().get(Calendar.MINUTE);
+        int currentSecond = Calendar.getInstance().get(Calendar.SECOND);
+        return currentMin;
     }
 
     @Override
@@ -347,11 +306,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStop() {
         super.onStop();
-        putPrefs();
-        putNotesOnPrefs ();
+        putMoodPrefs();
+        putNotesPrefs ();
         //mPrefs.edit().clear().apply();
         System.out.println("onStop!!!!!!!!!!!onStop!!!!!!!!!!!!!onStop!!");
-        System.out.println("mLastTimeDay = " + mLastTimeDay);
+        System.out.println("mDayOfLastMood = " + mDayOfLastMood);
     }
 
     @Override
