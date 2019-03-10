@@ -28,6 +28,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String [] PREF_MOOD = new String[]{"PREF_MOOD1","PREF_MOOD2","PREF_MOOD3","PREF_MOOD4",
             "PREF_MOOD5","PREF_MOOD6","PREF_MOOD7","PREF_MOOD8"};
 
+    public static final String [] PREF_NOTES = new String[] {"PREF_NOTES1","PREF_NOTES2","PREF_NOTES3","PREF_NOTES4",
+            "PREF_NOTES5","PREF_NOTES6","PREF_NOTES7","PREF_NOTES8"};
+
     public static final String PREF_LAST_QUIT_DAY = "PREF_LAST_QUIT_DAY";
     public static final String PREF_LAST_QUIT_MOOD = "PREF_LAST_QUIT_MOOD";
 
@@ -88,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //INITIALIZATION PREFERENCES
         mPrefs = getPreferences(MODE_PRIVATE);
         this.initGetPrefs();
+        this.initNotesPrefs();
 
         //ACTIONS
         this.trackingData();
@@ -221,14 +225,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.e("trackingNotes","mUserNotesHistory " + mUserNotesHistory);
         Log.e("trackingNotes","____________________________________");
 
-
-
-
     }
+
+    private void putNotesOnPrefs (){
+        ArrayList<String> Day = new ArrayList<>();
+        for (int i = 0;i<8;i++){
+            Day.add(mUserNotesHistory.get(i));
+            mPrefs.edit().putString(PREF_NOTES[i],Day.get(i)).apply();
+        }
+    }
+
+    private void initNotesPrefs (){
+        ArrayList<String> index = new ArrayList<>();
+        mUserNotesHistory = new ArrayList<>();
+        for (int i = 0;i<8;i++){
+            index.add(mPrefs.getString(PREF_NOTES[i],"default"));
+            mUserNotesHistory.add(index.get(i));
+        }
+    }
+
+
     private void initGetPrefs(){
         //INIT
-        ArrayList<Integer> Day = new ArrayList<>();
-        mUserNotesHistory = new ArrayList<>();
+        ArrayList<Integer> index = new ArrayList<>();
         mMoodHistory = new ArrayList<>();
         mDayTracking = new ArrayList<>();
 
@@ -241,8 +260,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(mLastTimeDay == testTime()){
             mViewPager.setCurrentItem(mLastTimeMood);
             for (int i = 0;i<8;i++){
-                Day.add(mPrefs.getInt(PREF_MOOD[i],-2));
-                mMoodHistory.add(Day.get(i));
+                index.add(mPrefs.getInt(PREF_MOOD[i],-2));
+                mMoodHistory.add(index.get(i));
             }
         } else if (testTime()-mLastTimeDay > 7){
             mMoodHistory.clear();
@@ -252,8 +271,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         } else {
             for (int i = 0;i<8;i++){
-                Day.add(mPrefs.getInt(PREF_MOOD[i],-2));
-                mMoodHistory.add(Day.get(i));
+                index.add(mPrefs.getInt(PREF_MOOD[i],-2));
+                mMoodHistory.add(index.get(i));
             }
             mDayTracking.add(mLastTimeDay);
             mViewPager.setCurrentItem(3);
@@ -329,6 +348,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStop() {
         super.onStop();
         putPrefs();
+        putNotesOnPrefs ();
         //mPrefs.edit().clear().apply();
         System.out.println("onStop!!!!!!!!!!!onStop!!!!!!!!!!!!!onStop!!");
         System.out.println("mLastTimeDay = " + mLastTimeDay);
